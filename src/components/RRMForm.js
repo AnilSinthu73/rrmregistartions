@@ -134,7 +134,7 @@ const RRMForm = () => {
     }
 
     try {
-      const response = await axios.post('http://localhost:9999/api/submit-form', dataToSubmit, {
+      const response = await axios.post('https://registerapi.jntugv.edu.in/api/submit-form', dataToSubmit, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
