@@ -1,0 +1,528 @@
+import axios from 'axios'; // Import Axios
+import React, { useState } from 'react';
+import './RRMForm.css'; // Import the custom CSS
+
+const RRMForm = () => {
+  const [formData, setFormData] = useState({
+    scholarName: '',
+    dateOfBirth: '',
+    branch: '',
+    rollNumber: '',
+    scholarContact: '',
+    supervisorContact: '',
+    coSupervisorContact: '',
+    titleOfResearch: '',
+    areaOfResearch: '',
+    progressFile: null,
+    auditCourses: [
+      { courseName: '', year: '', },
+    ],
+    creditCourses: [
+      { courseName: '', year: '', },
+    ],
+    prePhDSubjects: [
+      { courseName: '', year: '', },
+    ],
+    rrmDetails: [
+      { date: '', status: '', satisfaction: '', },
+    ],
+    publications: [
+      {
+        title: '',
+        authors: '',
+        journalConference: '',
+        freePaid: '',
+        impactFactor: '',
+      },
+    ],
+  });
+
+  const [fileError, setFileError] = useState('');
+
+  // Handler for non-nested fields
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  // Handler for file input
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Check if the file is a PDF
+      if (file.type !== 'application/pdf') {
+        setFileError('Only PDF files are allowed.');
+        setFormData((prevData) => ({
+          ...prevData,
+          progressFile: null,
+        }));
+      } else {
+        setFileError('');
+        setFormData((prevData) => ({
+          ...prevData,
+          progressFile: file,
+        }));
+      }
+    }
+  };
+
+  // Handler for dynamic sections (Courses, Subjects)
+  const handleNestedChange = (e, section, index) => {
+    const { name, value } = e.target;
+    const updatedSection = formData[section].map((item, i) => {
+      if (i === index) {
+        return { ...item, [name]: value };
+      }
+      return item;
+    });
+    setFormData((prevData) => ({
+      ...prevData,
+      [section]: updatedSection,
+    }));
+  };
+
+  // Handler for RRM Details
+  const handleRRMChange = (index, e) => {
+    const { name, value } = e.target;
+    const updatedRRMs = formData.rrmDetails.map((rrm, i) => {
+      if (i === index) {
+        return { ...rrm, [name]: value };
+      }
+      return rrm;
+    });
+    setFormData((prevData) => ({
+      ...prevData,
+      rrmDetails: updatedRRMs,
+    }));
+  };
+
+  // Handler for Publications
+  const handlePublicationChange = (index, e) => {
+    const { name, value } = e.target;
+    const updatedPublications = formData.publications.map((pub, i) => {
+      if (i === index) {
+        return { ...pub, [name]: value };
+      }
+      return pub;
+    });
+    setFormData((prevData) => ({
+      ...prevData,
+      publications: updatedPublications,
+    }));
+  };
+
+  // Add new entry to a section
+  const addEntry = (section) => {
+    const newEntry = (() => {
+      switch (section) {
+        case 'auditCourses':
+        case 'creditCourses':
+        case 'prePhDSubjects':
+          return { courseName: '', year: '' };
+        case 'rrmDetails':
+          return { date: '', status: '', satisfaction: '', };
+        case 'publications':
+          return {
+            title: '',
+            authors: '',
+            journalConference: '',
+            freePaid: '',
+            impactFactor: '',
+          };
+        default:
+          return {};
+      }
+    })();
+
+    setFormData((prevData) => ({
+      ...prevData,
+      [section]: [...prevData[section], newEntry],
+    }));
+  };
+
+  // Remove entry from a section
+  const removeEntry = (section, index) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      [section]: prevData[section].filter((_, i) => i !== index),
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    // Add validation logic here if needed
+
+    // Optional: Validate that a PDF file is uploaded
+    if (!formData.progressFile) {
+      setFileError('Please upload a PDF file for the progress of the work.');
+      return;
+    }
+
+    // Prepare form data for submission
+    const dataToSubmit = new FormData();
+    for (const key in formData) {
+      if (Array.isArray(formData[key])) {
+        dataToSubmit.append(key, JSON.stringify(formData[key]));
+      } else {
+        dataToSubmit.append(key, formData[key]);
+      }
+    }
+
+    try {
+      const response = await axios.post('http://localhost:9999/submit-form', dataToSubmit, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      console.log('Form data submitted:', response.data);
+      // Handle success (e.g., show a success message, reset the form, etc.)
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      // Handle error (e.g., show an error message)
+    }
+  };
+
+  return (
+    <div className="form-container">
+      <h2>Application Form for RRM</h2>
+
+      <form onSubmit={handleSubmit}>
+        {/* Scholar Details Section */}
+        <h3>Scholar Details</h3>
+        <label>Name of the Scholar</label>
+        <input
+          type="text"
+          name="scholarName"
+          value={formData.scholarName}
+          onChange={handleChange}
+          required
+        />
+
+        <label>Date of Birth</label>
+        <input
+          type="date"
+          name="dateOfBirth"
+          value={formData.dateOfBirth}
+          onChange={handleChange}
+          required
+        />
+
+        <label>Branch / Department</label>
+        <input
+          type="text"
+          name="branch"
+          value={formData.branch}
+          onChange={handleChange}
+          required
+        />
+
+        <label>Roll Number</label>
+        <input
+          type="text"
+          name="rollNumber"
+          value={formData.rollNumber}
+          onChange={handleChange}
+          required
+        />
+
+        <label>Scholar Contact Details (Mobile No. & Email)</label>
+        <input
+          type="text"
+          name="scholarContact"
+          value={formData.scholarContact}
+          onChange={handleChange}
+          required
+        />
+
+        <label>Supervisor Contact Details:</label>
+        <input
+          type="text"
+          name="supervisorContact"
+          value={formData.supervisorContact}
+          onChange={handleChange}
+          required
+        />
+
+        <label>Co-Supervisor Contact Details:</label>
+        <input
+          type="text"
+          name="coSupervisorContact"
+          value={formData.coSupervisorContact}
+          onChange={handleChange}
+          // Optional field: No 'required' attribute
+        />
+
+        <label>Title of Research Work:</label>
+        <input
+          type="text"
+          name="titleOfResearch"
+          value={formData.titleOfResearch}
+          onChange={handleChange}
+          required
+        />
+
+        <label>Area of Research Work:</label>
+        <input
+          type="text"
+          name="areaOfResearch"
+          value={formData.areaOfResearch}
+          onChange={handleChange}
+          required
+        />
+
+        <label>Progress of the Work (Upload PDF File):</label>
+        <input
+          type="file"
+          name="progressFile"
+          onChange={handleFileChange}
+          accept=".pdf,application/pdf"
+        />
+        {fileError && <p className="error-message">{fileError}</p>}
+
+        {/* Pre-Ph.D. Courses Section */}
+        <h3>Pre-Ph.D. Courses</h3>
+        {formData.auditCourses.map((course, index) => (
+          <div key={index} className="course-detail">
+            <h4>Audit Course {index + 1}</h4>
+            <label>Course Name</label>
+            <input
+              type="text"
+              name="courseName"
+              value={course.courseName}
+              onChange={(e) => handleNestedChange(e, 'auditCourses', index)}
+              required
+            />
+            <label>Year of Completion</label>
+            <input
+              type="text"
+              name="year"
+              value={course.year}
+              onChange={(e) => handleNestedChange(e, 'auditCourses', index)}
+              required
+            />
+
+            {formData.auditCourses.length > 1 && (
+              <button
+                type="button"
+                onClick={() => removeEntry('auditCourses', index)}
+                className="remove-button"
+              >
+                Remove
+              </button>
+            )}
+          </div>
+        ))}
+        <button type="button" onClick={() => addEntry('auditCourses')} className="add-button">
+          Add Audit Course
+        </button>
+
+        {formData.creditCourses.map((course, index) => (
+          <div key={index} className="course-detail">
+            <h4>Credit Course {index + 1}</h4>
+            <label>Course Name</label>
+            <input
+              type="text"
+              name="courseName"
+              value={course.courseName}
+              onChange={(e) => handleNestedChange(e, 'creditCourses', index)}
+              required
+            />
+            <label>Year of Completion</label>
+            <input
+              type="text"
+              name="year"
+              value={course.year}
+              onChange={(e) => handleNestedChange(e, 'creditCourses', index)}
+              required
+            />
+
+            {formData.creditCourses.length > 1 && (
+              <button
+                type="button"
+                onClick={() => removeEntry('creditCourses', index)}
+                className="remove-button"
+              >
+                Remove
+              </button>
+            )}
+          </div>
+        ))}
+        <button type="button" onClick={() => addEntry('creditCourses')} className="add-button">
+          Add Credit Course
+        </button>
+
+        {formData.prePhDSubjects.map((subject, index) => (
+          <div key={index} className="course-detail">
+            <h4>Pre-Ph.D. Subject {index + 1}</h4>
+            <label>Course Name</label>
+            <input
+              type="text"
+              name="courseName"
+              value={subject.courseName}
+              onChange={(e) => handleNestedChange(e, 'prePhDSubjects', index)}
+              required
+            />
+            <label>Year of Completion</label>
+            <input
+              type="text"
+              name="year"
+              value={subject.year}
+              onChange={(e) => handleNestedChange(e, 'prePhDSubjects', index)}
+              required
+            />
+
+            {formData.prePhDSubjects.length > 1 && (
+              <button
+                type="button"
+                onClick={() => removeEntry('prePhDSubjects', index)}
+                className="remove-button"
+              >
+                Remove
+              </button>
+            )}
+          </div>
+        ))}
+        <button type="button" onClick={() => addEntry('prePhDSubjects')} className="add-button">
+          Add Pre-Ph.D. Subject
+        </button>
+
+        {/* Details of RRMs attended Section */}
+        <h3>Details of RRMs attended</h3>
+        {formData.rrmDetails.map((rrm, index) => (
+          <div key={index} className="rrm-detail">
+            <h4>RRM {index + 1}</h4>
+            <label>Date of RRM:</label>
+            <input
+              type="date"
+              name="date"
+              value={rrm.date}
+              onChange={(e) => handleRRMChange(index, e)}
+              required
+            />
+
+            <label>Status of the Work:</label>
+            <input
+              type="text"
+              name="status"
+              value={rrm.status}
+              onChange={(e) => handleRRMChange(index, e)}
+              required
+            />
+
+            <label>Satisfactory/Not Satisfactory:</label>
+            <select
+              name="satisfaction"
+              value={rrm.satisfaction}
+              onChange={(e) => handleRRMChange(index, e)}
+              required
+            >
+              <option value="">Select</option>
+              <option value="Satisfactory">Satisfactory</option>
+              <option value="Not Satisfactory">Not Satisfactory</option>
+            </select>
+
+            {formData.rrmDetails.length > 1 && (
+              <button
+                type="button"
+                onClick={() => removeEntry('rrmDetails', index)}
+                className="remove-button"
+              >
+                Remove
+              </button>
+            )}
+          </div>
+        ))}
+        <button type="button" onClick={() => addEntry('rrmDetails')} className="add-button">
+          Add More RRM Details
+        </button>
+
+        {/* Details of Publications Section */}
+        <h3>Details of Publications</h3>
+        {formData.publications.map((pub, index) => (
+          <div key={index} className="publication-detail">
+            <h4>Publication {index + 1}</h4>
+            <label>Title of the Paper:</label>
+            <input
+              type="text"
+              name="title"
+              value={pub.title}
+              onChange={(e) => handlePublicationChange(index, e)}
+              required
+            />
+
+            <label>Name of the Authors:</label>
+            <input
+              type="text"
+              name="authors"
+              value={pub.authors}
+              onChange={(e) => handlePublicationChange(index, e)}
+              required
+            />
+
+            <label>Journal/Conference Details:</label>
+            <input
+              type="text"
+              name="journalConference"
+              value={pub.journalConference}
+              onChange={(e) => handlePublicationChange(index, e)}
+              required
+            />
+
+            <label>Free/Paid:</label>
+            <select
+              name="freePaid"
+              value={pub.freePaid}
+              onChange={(e) => handlePublicationChange(index, e)}
+              required
+            >
+              <option value="">Select</option>
+              <option value="Free">Free</option>
+              <option value="Paid">Paid</option>
+            </select>
+
+            <label>Impact Factor:</label>
+            <input
+              type="number"
+              name="impactFactor"
+              value={pub.impactFactor}
+              onChange={(e) => handlePublicationChange(index, e)}
+              min="0"
+              step="0.01"
+              required
+            />
+
+            {formData.publications.length > 1 && (
+              <button
+                type="button"
+                onClick={() => removeEntry('publications', index)}
+                className="remove-button"
+              >
+                Remove
+              </button>
+            )}
+          </div>
+        ))}
+        <button type="button" onClick={() => addEntry('publications')} className="add-button">
+          Add More Publications
+        </button>
+        <label>RRM Application Form (Upload PDF File):</label>
+        <input
+          type="file"
+          name="progressFile"
+          onChange={handleFileChange}
+          accept=".pdf,application/pdf"
+        />
+        {fileError && <p className="error-message">{fileError}</p>}
+
+        <button type="submit" className="submit-button" style={{ marginTop: "1em" }}>
+          Submit
+        </button>
+      </form>
+    </div>
+  );
+};
+
+export default RRMForm;

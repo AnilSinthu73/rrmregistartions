@@ -1,0 +1,68 @@
+/* submissions.css */
+
+.submissions-container {
+    max-width: 1000px; /* Set a maximum width for the container */
+    margin: 0 auto; /* Center the container */
+    padding: 2rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  h2 {
+    text-align: center;
+    color: #343a40;
+    margin-bottom: 1rem;
+  }
+  
+  .csv-download-button {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  
+  .btn {
+    padding: 0.75rem 1.25rem;
+    background-color: #007bff;
+    color: #ffffff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+  }
+  
+  .btn:hover {
+    background-color: #0056b3;
+  }
+  
+  .submissions-table {
+    width: 100%; /* Make the table take the full width of the container */
+    border-collapse: collapse;
+    margin-top: 1rem;
+    table-layout: fixed; /* Prevent the table from expanding based on content */
+  }
+  
+  .submissions-table th, .submissions-table td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid #dee2e6;
+    word-wrap: break-word; /* Allow text to wrap within the cell */
+    max-width: 150px; /* Set a maximum width for table cells */
+  }
+  
+  .submissions-table th {
+    background-color: #e9ecef;
+    color: #495057;
+  }
+  
+  .submissions-table tr:hover {
+    background-color: #f1f3f5;
+  }
+  
+  .error-message {
+    color: #dc3545;
+    text-align: center;
+    margin-top: 1rem;
+  }
+  
