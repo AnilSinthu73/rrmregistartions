@@ -12,8 +12,10 @@ const RRMForm = () => {
     rollNumber: '',
     scholarMobile: '',
     scholarEmail: '',
+    supervisorName: '',
     supervisorMobile: '',
     supervisorEmail: '',
+    coSupervisorName: '',
     coSupervisorMobile: '',
     coSupervisorEmail: '',
     titleOfResearch: '',
@@ -27,7 +29,7 @@ const RRMForm = () => {
       { courseName: '', year: '' },
     ],
     rrmDetails: [
-      { date: '', status: '', satisfaction: '' },
+      { date: '', status: '', satisfaction: '', rrmDetailsFile: null },
     ],
     publications: [
       {
@@ -84,10 +86,62 @@ const RRMForm = () => {
     });
   };
 
+  const handleNestedFileChange = async (e, section, index) => {
+    const file = e.target.files[0];
+    
+    if (file) {
+      if (file.type !== 'application/pdf') {
+        // Set an error message if the file type is not PDF
+        setFileError(`Only PDF files are allowed for ${section}.`);
+        setFormData((prevData) => {
+          const updatedSection = Array.isArray(prevData[section]) ? [...prevData[section]] : [];
+          updatedSection[index] = {
+            ...updatedSection[index],
+            rrmDetailsFile: null, // Clear the file if it is not PDF
+          };
+          return {
+            ...prevData,
+            [section]: updatedSection,
+          };
+        });
+      } else {
+        setFileError(''); // Clear any previous file error
+  
+        // Prepare the file for upload using FormData
+        const formData = new FormData();
+        formData.append('file', file); // Append the file (fixed)
+        console.log(file);
+        try {
+          // Simulate file upload to the server (replace with actual API call)
+          // const response = await uploadFileToServer(formData); // Uncomment when the API is defined
+          
+          // Simulate successful upload response (example of using the uploaded filename)
+          const uploadedFileName = `${file.name}`; // Replace with actual response from backend if needed
+  
+          // Update the formData state with the uploaded file information
+          setFormData((prevData) => {
+            const updatedSection = Array.isArray(prevData[section]) ? [...prevData[section]] : [];
+            updatedSection[index] = {
+              ...(updatedSection[index] || {}),
+              rrmDetailsFile: uploadedFileName, // Use the filename/path returned from the server
+            };
+            return {
+              ...prevData,
+              [section]: updatedSection,
+            };
+          });
+        } catch (error) {
+          console.error('File upload failed:', error);
+          setFileError('Failed to upload the file. Please try again.');
+        }
+      }
+    }
+  };
+  
   const addEntry = (section) => {
     setFormData((prevData) => {
       const newEntry = section === 'rrmDetails'
-        ? { date: '', status: '', satisfaction: '' }
+        ? { date: '', status: '', satisfaction: '', rrmDetailsFile: null }
         : {
             title: '',
             authors: '',
@@ -134,7 +188,7 @@ const RRMForm = () => {
     }
 
     try {
-      const response = await axios.post('https://registerapi.jntugv.edu.in/api/submit-form', dataToSubmit, {
+      const response = await axios.post('http://localhost:9999/api/submit-form', dataToSubmit, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -148,12 +202,11 @@ const RRMForm = () => {
         branch: '',
         rollNumber: '',
         scholarMobile: '',
-
         scholarEmail: '',
-        supervisorName:'',
+        supervisorName: '',
         supervisorMobile: '',
         supervisorEmail: '',
-        coSupervisorName:'',
+        coSupervisorName: '',
         coSupervisorMobile: '',
         coSupervisorEmail: '',
         titleOfResearch: '',
@@ -167,7 +220,7 @@ const RRMForm = () => {
           { courseName: '', year: '' },
         ],
         rrmDetails: [
-          { date: '', status: '', satisfaction: '' },
+          { date: '', status: '', satisfaction: '',rrmDetailsFile: null},
         ],
         publications: [
           {
@@ -176,6 +229,7 @@ const RRMForm = () => {
             journalConference: '',
             freePaid: '',
             impactFactor: '',
+          
           },
         ],
       });
@@ -190,6 +244,7 @@ const RRMForm = () => {
     <div className="rrm-form-container">
       <h2 className="rrm-form-title">Application Form for RRM</h2>
       <form onSubmit={handleSubmit} className="rrm-form">
+        {/* Scholar Details Section */}
         <section className="form-section">
           <h3 className="section-title">Scholar Details</h3>
           <div className="input-group">
@@ -271,7 +326,7 @@ const RRMForm = () => {
             />
           </div>
           <div className="input-group">
-            <label>Supervisior Contanct No</label>
+            <label>Supervisor Contact No</label>
             <input
               type="tel"
               name="supervisorMobile"
@@ -282,7 +337,7 @@ const RRMForm = () => {
               required
               className="form-input"
             />
-            <label>Supervisiors Email</label>
+            <label>Supervisor Email</label>
             <input
               type="email"
               name="supervisorEmail"
@@ -301,12 +356,11 @@ const RRMForm = () => {
               value={formData.coSupervisorName}
               onChange={handleChange}
               placeholder="Co-Supervisor Name"
-              required
               className="form-input"
             />
           </div>
           <div className="input-group">
-            <label>coSupervisorContact</label>
+            <label>Co-Supervisor Contact</label>
             <input
               type="tel"
               name="coSupervisorMobile"
@@ -316,7 +370,7 @@ const RRMForm = () => {
               pattern="[0-9]{10}"
               className="form-input"
             />
-            <label>Cosupervisior Email</label>
+            <label>Co-Supervisor Email</label>
             <input
               type="email"
               name="coSupervisorEmail"
@@ -336,7 +390,7 @@ const RRMForm = () => {
               required
               className="form-input"
             />
-            <label>Area Of  Resaerch</label>
+            <label>Area Of Research</label>
             <input
               type="text"
               name="areaOfResearch"
@@ -367,6 +421,7 @@ const RRMForm = () => {
           </div>
         </section>
 
+        {/* Audit Course Section */}
         <section className="form-section">
           <h3 className="section-title">Audit Course</h3>
           <div className="input-group">
@@ -395,6 +450,7 @@ const RRMForm = () => {
           </div>
         </section>
 
+        {/* Credit Course Section */}
         <section className="form-section">
           <h3 className="section-title">Credit Course</h3>
           <div className="input-group">
@@ -423,6 +479,7 @@ const RRMForm = () => {
           </div>
         </section>
 
+        {/* Pre-PhD Subjects Section */}
         <section className="form-section">
           <h3 className="section-title">Pre-Ph.D. Subjects</h3>
           {formData.prePhDSubjects.map((subject, index) => (
@@ -453,6 +510,7 @@ const RRMForm = () => {
           ))}
         </section>
 
+        {/* RRM Details Section */}
         <section className="form-section">
           <h3 className="section-title">Details of RRMs attended</h3>
           {formData.rrmDetails.map((rrm, index) => (
@@ -490,6 +548,16 @@ const RRMForm = () => {
                   <option value="Not Satisfactory">Not Satisfactory</option>
                 </select>
               </div>
+              <label htmlFor={`rrmDetailFile-${index}`}>Upload File</label>
+              <input
+                type="file"
+                id={`rrmDetailFile-${index}`}
+                name={`rrmDetailFile-${index}`}
+                onChange={(e) => handleNestedFileChange(e, 'rrmDetails', index)}
+                accept=".pdf"
+                className="form-input"
+                required
+              />
               {index > 0 && (
                 <button type="button" onClick={() => removeEntry('rrmDetails', index)} className="remove-btn">
                   Remove
@@ -502,6 +570,7 @@ const RRMForm = () => {
           </button>
         </section>
 
+        {/* Publications Section */}
         <section className="form-section">
           <h3 className="section-title">Details of Publications</h3>
           {formData.publications.map((pub, index) => (
@@ -564,6 +633,15 @@ const RRMForm = () => {
                   className="form-input"
                 />
               </div>
+              {/* <label htmlFor={`publicationFile-${index}`}>Upload File</label>
+              <input
+                type="file"
+                id={`publicationFile-${index}`}
+                name="file"
+                onChange={(e) => handleNestedFileChange(e, 'publications', index)}
+                accept=".pdf"
+                className="form-input"
+              /> */}
               {index > 0 && (
                 <button type="button" onClick={() => removeEntry('publications', index)} className="remove-btn">
                   Remove
