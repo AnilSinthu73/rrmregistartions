@@ -6,41 +6,42 @@ const currentYear = new Date().getFullYear();
 
 const RRMForm = () => {
   const [formData, setFormData] = useState({
-    scholarName: '',
-    dateOfBirth: '',
-    branch: '',
-    rollNumber: '',
-    scholarMobile: '',
-    scholarEmail: '',
-    supervisorName: '',
-    supervisorMobile: '',
-    supervisorEmail: '',
-    coSupervisorName: '',
-    coSupervisorMobile: '',
-    coSupervisorEmail: '',
-    titleOfResearch: '',
-    areaOfResearch: '',
-    progressFile: null,
-    rrmApplicationFile: null,
-    auditCourse: { courseName: '', year: '' },
-    creditCourse: { courseName: '', year: '' },
-    prePhDSubjects: [
-      { courseName: '', year: '' },
-      { courseName: '', year: '' },
-    ],
-    rrmDetails: [
-      { date: '', status: '', satisfaction: '', rrmDetailsFile: null },
-    ],
-    publications: [
-      {
-        title: '',
-        authors: '',
-        journalConference: '',
-        freePaid: '',
-        impactFactor: '',
-      },
-    ],
-  });
+    scholarName: 'Test',
+        dateOfBirth: '11102023',
+        branch: 't',
+        rollNumber: 't',
+        scholarMobile: '9876452310',
+        scholarEmail: 't@gmail.c',
+        supervisorName: 't',
+        supervisorMobile: '8465321460',
+        supervisorEmail: 'anilsinthu@g.c',
+        coSupervisorName: '',
+        coSupervisorMobile: '',
+        coSupervisorEmail: '',
+        titleOfResearch: 'AI ',
+        areaOfResearch: 'DL',
+        progressFile: '',
+        rrmApplicationFile: '',
+        auditCourse: { courseName: '1', year: '2003' },
+        creditCourse: { courseName: '1', year: '2003' },
+        prePhDSubjects: [
+          { courseName: '2', year: '2002' },
+          { courseName: '2', year: '2003' },
+        ],
+        rrmDetails: [
+          { date: '', status: '2x', satisfaction: 'satisfactory',rrmDetailsFile: ''},
+        ],
+        publications: [
+          {
+            title: 'x',
+            authors: 'x',
+            journalConference: '3',
+            freePaid: '3e',
+            impactFactor: '9',
+          
+          },
+        ],
+      });
 
   const [fileError, setFileError] = useState('');
 
@@ -110,7 +111,7 @@ const RRMForm = () => {
         // Prepare the file for upload using FormData
         const formData = new FormData();
         formData.append('file', file); // Append the file (fixed)
-        console.log(file);
+        
         try {
           // Simulate file upload to the server (replace with actual API call)
           // const response = await uploadFileToServer(formData); // Uncomment when the API is defined
@@ -141,7 +142,7 @@ const RRMForm = () => {
   const addEntry = (section) => {
     setFormData((prevData) => {
       const newEntry = section === 'rrmDetails'
-        ? { date: '', status: '', satisfaction: '', rrmDetailsFile: null }
+        ? { date: '', status: '', satisfaction: '', rrmDetailsFile: '' }
         : {
             title: '',
             authors: '',
@@ -178,8 +179,23 @@ const RRMForm = () => {
 
     const dataToSubmit = new FormData();
     for (const key in formData) {
-      if (key === 'auditCourse' || key === 'creditCourse' || key === 'prePhDSubjects' || key === 'rrmDetails' || key === 'publications') {
-        dataToSubmit.append(key, JSON.stringify(formData[key]));
+      if (
+        key === 'auditCourse' ||
+        key === 'creditCourse' ||
+        key === 'prePhDSubjects' ||
+        key === 'rrmDetails' ||
+        key === 'publications'
+      ) {
+        if (key === 'rrmDetails') {
+          formData.rrmDetails.forEach((detail, index) => {
+            dataToSubmit.append(`rrmDetails[${index}][date]`, detail.date);
+            dataToSubmit.append(`rrmDetails[${index}][status]`, detail.status);
+            dataToSubmit.append(`rrmDetails[${index}][satisfaction]`, detail.satisfaction);
+            dataToSubmit.append(`rrmDetails[${index}][file]`, detail.file);
+          });
+        } else {
+          dataToSubmit.append(key, JSON.stringify(formData[key]));
+        }
       } else if (key === 'progressFile' || key === 'rrmApplicationFile') {
         dataToSubmit.append(key, formData[key]);
       } else {
@@ -188,7 +204,7 @@ const RRMForm = () => {
     }
 
     try {
-      const response = await axios.post('http://localhost:9999/api/submit-form', dataToSubmit, {
+      const response = await axios.post('https://registerapi.jntugv.edu.in/api/submit-form', dataToSubmit, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -197,38 +213,38 @@ const RRMForm = () => {
       alert('Form submitted successfully!');
       // Reset form data here
       setFormData({
-        scholarName: '',
-        dateOfBirth: '',
-        branch: '',
-        rollNumber: '',
-        scholarMobile: '',
-        scholarEmail: '',
-        supervisorName: '',
-        supervisorMobile: '',
-        supervisorEmail: '',
+        scholarName: 'Test',
+        dateOfBirth: '20241014',
+        branch: 't',
+        rollNumber: 't',
+        scholarMobile: '986452310',
+        scholarEmail: 't@gmail.c',
+        supervisorName: 't',
+        supervisorMobile: '8465321460',
+        supervisorEmail: 'anilsinthu@g.c',
         coSupervisorName: '',
         coSupervisorMobile: '',
         coSupervisorEmail: '',
         titleOfResearch: '',
         areaOfResearch: '',
-        progressFile: null,
-        rrmApplicationFile: null,
-        auditCourse: { courseName: '', year: '' },
-        creditCourse: { courseName: '', year: '' },
+        progressFile: '',
+        rrmApplicationFile: '',
+        auditCourse: { courseName: '1', year: '2003' },
+        creditCourse: { courseName: '1', year: '2003' },
         prePhDSubjects: [
-          { courseName: '', year: '' },
-          { courseName: '', year: '' },
+          { courseName: '2', year: '2002' },
+          { courseName: '2', year: '2003' },
         ],
         rrmDetails: [
-          { date: '', status: '', satisfaction: '',rrmDetailsFile: null},
+          { date: '', status: '2x', satisfaction: 'satisfactory',rrmDetailsFile: ''},
         ],
         publications: [
           {
-            title: '',
-            authors: '',
-            journalConference: '',
-            freePaid: '',
-            impactFactor: '',
+            title: 'x',
+            authors: 'x',
+            journalConference: '3',
+            freePaid: '3e',
+            impactFactor: '9',
           
           },
         ],
@@ -548,11 +564,11 @@ const RRMForm = () => {
                   <option value="Not Satisfactory">Not Satisfactory</option>
                 </select>
               </div>
-              <label htmlFor={`rrmDetailFile-${index}`}>Upload File</label>
+              <label htmlFor={`rrmDetailsFile-${index}`}>Upload File</label>
               <input
                 type="file"
-                id={`rrmDetailFile-${index}`}
-                name={`rrmDetailFile-${index}`}
+                id={`rrmDetailsFile-${index}`}
+                name={`rrmDetailsFile-${index}`}
                 onChange={(e) => handleNestedFileChange(e, 'rrmDetails', index)}
                 accept=".pdf"
                 className="form-input"
