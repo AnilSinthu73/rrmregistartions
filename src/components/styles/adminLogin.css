@@ -3,6 +3,7 @@ body {
     font-family: Arial, sans-serif;
     background-color: #f4f4f4;
     color: #333;
+    align: center;
 }
 
 .admin-login-container {
@@ -52,7 +53,8 @@ button {
 }
 
 button:hover {
-    background-color: #357ab8;
+    background-color: #357ab9;
+
 }
 
 .error-message {

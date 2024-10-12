@@ -19,39 +19,40 @@ h2, h3 {
 
 /* Form Container */
 .rrm-form-container, .login-container {
-  max-width: 900px; /* Increased width for better spacing */
+  max-width: 100%; /* Make it flexible for larger screens */
+  width: 500px; /* Reduced width for all screens */
   margin: 20px auto;
-  padding: 2rem;
-  background-color: #f8f9fa;
-  border-radius: 8px;
+  padding: 1.5rem; /* Reduced padding */
+  background-color: #ffffff;
+  border-radius: 10px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
-  gap: 1.5rem; /* Spacing between form sections */
+  gap: 1.5rem;
 }
 
 .rrm-form-title, .login-title {
   text-align: center;
   color: #343a40;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
   font-size: 1.8rem;
 }
 
 .rrm-form, .login-form {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem; /* Spacing between form inputs */
+  gap: 1rem; /* Reduced gap */
 }
 
 /* Form Sections */
 .form-section {
   background-color: #ffffff;
-  padding: 1.5rem;
+  padding: 1rem; /* Reduced padding */
   border-radius: 6px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   display: flex;
   flex-direction: column;
-  gap: 1rem; /* Spacing between section elements */
+  gap: 1rem;
 }
 
 .section-title {
@@ -66,22 +67,23 @@ h2, h3 {
 .input-group {
   display: flex;
   flex-wrap: wrap;
-  gap: 1.2rem; /* Spacing between input groups */
+  gap: 1rem; /* Reduced gap between inputs */
   margin-bottom: 1.5rem;
 }
 
 .form-input, .form-select {
-  flex: 1; /* Equal sizes for inputs */
-  padding: 0.75rem;
+  flex: 1;
+  padding: 0.5rem; /* Reduced padding */
   border: 1px solid #ced4da;
   border-radius: 4px;
-  font-size: 1rem;
+  font-size: 0.9rem; /* Reduced font size */
   background-color: #ffffff;
-  transition: border-color 0.3s ease;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .form-input:focus, .form-select:focus {
   border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
   outline: none;
 }
 
@@ -93,35 +95,53 @@ h2, h3 {
   background-size: 1.5em;
 }
 
-.rrm-detail, .publication-detail {
-  background-color: #f1f3f5;
-  padding: 1rem;
-  border-radius: 4px;
-  margin-bottom: 1rem;
-  border: 1px solid #ced4da;
+/* File Upload */
+.file-upload-group {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* Space between label and input */
+  gap: 0.8rem; /* Reduced gap */
 }
 
-/* Labels */
-label {
-  display: block;
-  margin-bottom: 0.5rem;
-  color: #495057;
+.file-upload-label {
   font-weight: bold;
+  color: #495057;
+  flex: 1; /* Labels take up less space */
+  text-align: left;
+}
+
+.file-upload-input {
+  flex: 2; /* Inputs still take more space */
+}
+
+/* File Input Styling */
+input[type="file"] {
+  padding: 0.3rem; /* Reduced padding */
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  background-color: #ffffff;
+  transition: border-color 0.3s ease;
+}
+
+input[type="file"]:focus {
+  border-color: #007bff;
+  outline: none;
 }
 
 /* Buttons */
 .add-btn, .remove-btn, .submit-btn, .login-btn {
-  padding: 0.75rem 1.25rem;
+  padding: 0.5rem 1rem; /* Smaller padding */
   border: none;
-  border-radius: 4px;
+  border-radius: 25px;
   cursor: pointer;
   font-weight: bold;
+  font-size: 0.85rem; /* Smaller font size */
   transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .add-btn, .remove-btn {
-  padding: 0.5rem 1rem; /* Smaller buttons */
-  font-size: 0.9rem; /* Smaller font size for responsiveness */
+  padding: 0.4rem 0.8rem; /* Reduced padding */
+  font-size: 0.85rem;
 }
 
 .add-btn {
@@ -131,77 +151,105 @@ label {
 
 .add-btn:hover {
   background-color: #218838;
-  transform: translateY(-2px); /* Adds a lift effect */
+  transform: translateY(-2px);
 }
 
 .remove-btn {
   background-color: #dc3545;
   color: #ffffff;
+  margin-top: 1rem; /* Adjust this value as needed for the desired spacing */
+  padding: 0.5rem 1rem; /* Optional: Add padding for better button size */
+  border: none;
+  cursor: pointer; /* Change cursor on hover */
 }
 
 .remove-btn:hover {
+  background-color: #c82333; /* Slightly darker shade on hover */
+}
+
+
+.remove-btn:hover {
   background-color: #c82333;
-  transform: translateY(-2px); /* Adds a lift effect */
+  transform: translateY(-2px);
 }
 
 .submit-btn {
   background-color: #007bff;
   color: #ffffff;
-  font-size: 1.1rem;
-  padding: 0.75rem 1.5rem;
-  align-self: center;
+  font-size: 1rem; /* Reduced font size */
+  padding: 0.6rem 1rem; /* Reduced padding */
 }
 
 .submit-btn:hover {
   background-color: #0056b3;
-  transform: translateY(-2px); /* Adds a lift effect */
+  transform: translateY(-2px);
 }
 
 .login-btn {
   background-color: #17a2b8;
   color: #ffffff;
-  font-size: 1.1rem;
+  font-size: 1rem;
+  padding: 0.6rem 1rem; /* Reduced padding */
 }
 
 .login-btn:hover {
   background-color: #138496;
-  transform: translateY(-2px); /* Adds a lift effect */
+  transform: translateY(-2px);
 }
 
-/* Error Message */
+/* Error & Success Messages */
 .error-message {
   color: #dc3545;
   text-align: center;
   margin-top: 1rem;
-  font-size: 1rem;
+  font-size: 0.9rem; /* Reduced font size */
+}
+
+.success-message {
+  color: #28a745;
+  text-align: center;
+  margin-top: 1rem;
+  font-size: 0.9rem; /* Reduced font size */
 }
 
 /* Media Queries */
 @media (max-width: 768px) {
   .rrm-form-container, .login-container {
+    width: 90%; /* Smaller form width for mobile screens */
     padding: 1rem;
   }
 
   .input-group {
-    flex-direction: column; /* Labels and inputs one after another */
+    flex-direction: column;
+    gap: 1rem;
   }
 
   .form-input, .form-select {
-    min-width: 100%;
+    min-width: 50%;
+    padding: 0.5rem; /* Smaller inputs on mobile */
+  }
+
+  .file-upload-group {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .file-upload-input {
+    width: 100%; /* Full width inputs */
+  }
+
+  .submit-btn {
+    width: 100%; /* Full width button */
+    font-size: 0.9rem; /* Smaller button on mobile */
+    padding: 0.5rem 0.8rem;
+    border-radius: 25px 15px 15px 25px;
   }
 }
 
-@media (max-width: 576px) {
-  .rrm-form-title, .login-title {
-    font-size: 1.5rem;
-  }
-
-  .section-title {
-    font-size: 1.1rem;
-  }
-
-  .submit-btn, .login-btn {
-    font-size: 1rem;
-    padding: 0.6rem 1.25rem;
+@media (min-width: 1024px) {
+  .rrm-form-container, .login-container {
+    width: 700px; /* Larger width for desktops */
+    padding: 2rem;
   }
 }

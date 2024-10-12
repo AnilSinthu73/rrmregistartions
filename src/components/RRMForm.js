@@ -55,8 +55,8 @@ const RRMForm = () => {
 
   const handleFileChange = (e, fieldName) => {
     const file = e.target.files[0];
-    const maxFileSize = 2* 1024 * 1024; // 5 MB in bytes
-  
+    const maxFileSize = 2 * 1024 * 1024; // 5 MB in bytes
+
     if (file) {
       if (file.type !== 'application/pdf') {
         setFileError(`Only PDF files are allowed for ${fieldName}.`);
@@ -79,7 +79,7 @@ const RRMForm = () => {
       }
     }
   };
-  
+
   const handleNestedChange = (e, section, index, field) => {
     const { value } = e.target;
     setFormData((prevData) => {
@@ -98,7 +98,7 @@ const RRMForm = () => {
   const handleNestedFileChange = (e, section, index) => {
     const file = e.target.files[0];
     const maxFileSize = 2 * 1024 * 1024; // 5 MB in bytes
-  
+
     if (file) {
       if (file.type !== 'application/pdf') {
         setFileError(`Only PDF files are allowed for ${section}.`);
@@ -133,7 +133,7 @@ const RRMForm = () => {
       }
     }
   };
- 
+
   const addEntry = (section) => {
     setFormData((prevData) => {
       const newEntry = section === 'rrmDetails'
@@ -247,7 +247,7 @@ const RRMForm = () => {
             />
           </div>
           <div className="input-group">
-            <label>Branch/ Department</label>
+            <label htmlFor="branch">Branch/ Department</label>
             <input
               type="text"
               name="branch"
@@ -257,7 +257,7 @@ const RRMForm = () => {
               required
               className="form-input"
             />
-            <label>Roll Number</label>
+            <label htmlFor='rollNumber'>Roll Number</label>
             <input
               type="text"
               name="rollNumber"
@@ -269,7 +269,7 @@ const RRMForm = () => {
             />
           </div>
           <div className="input-group">
-            <label>Contact No</label>
+            <label htmlFor='scholarMobile'>Contact No</label>
             <input
               type="tel"
               name="scholarMobile"
@@ -280,7 +280,7 @@ const RRMForm = () => {
               required
               className="form-input"
             />
-            <label>Email</label>
+            <label htmlFor='scholarEmail'>Email</label>
             <input
               type="email"
               name="scholarEmail"
@@ -292,7 +292,7 @@ const RRMForm = () => {
             />
           </div>
           <div className='input-group'>
-            <label>Supervisor Name</label>
+            <label htmlFor='supervisorName'>Supervisor Name</label>
             <input
               type="text"
               name="supervisorName"
@@ -304,7 +304,7 @@ const RRMForm = () => {
             />
           </div>
           <div className="input-group">
-            <label>Supervisor Contact No</label>
+            <label htmlFor='supervisorMobile'>Supervisor Contact No</label>
             <input
               type="tel"
               name="supervisorMobile"
@@ -315,7 +315,7 @@ const RRMForm = () => {
               required
               className="form-input"
             />
-            <label>Supervisor Email</label>
+            <label htmlFor='supervisorEmail'>Supervisor Email</label>
             <input
               type="email"
               name="supervisorEmail"
@@ -327,7 +327,7 @@ const RRMForm = () => {
             />
           </div>
           <div className="input-group">
-            <label>Co-Supervisor Name</label>
+            <label htmlFor='coSupervisorName'>Co-Supervisor Name</label>
             <input
               type="text"
               name="coSupervisorName"
@@ -338,7 +338,7 @@ const RRMForm = () => {
             />
           </div>
           <div className="input-group">
-            <label>Co-Supervisor Contact</label>
+            <label htmlFor='coSupervisorMobile'>Co-Supervisor Contact</label>
             <input
               type="tel"
               name="coSupervisorMobile"
@@ -348,7 +348,7 @@ const RRMForm = () => {
               pattern="[0-9]{10}"
               className="form-input"
             />
-            <label>Co-Supervisor Email</label>
+            <label htmlFor='coSupervisorEmail'>Co-Supervisor Email</label>
             <input
               type="email"
               name="coSupervisorEmail"
@@ -359,6 +359,7 @@ const RRMForm = () => {
             />
           </div>
           <div className="input-group">
+            <label htmlFor='titleOfResearch'>Title of Research</label>
             <input
               type="text"
               name="titleOfResearch"
@@ -368,7 +369,7 @@ const RRMForm = () => {
               required
               className="form-input"
             />
-            <label>Area Of Research</label>
+            <label htmlFor='areaOfResearch'>Area Of Research</label>
             <input
               type="text"
               name="areaOfResearch"
@@ -380,22 +381,27 @@ const RRMForm = () => {
             />
           </div>
           <div className="input-group">
-            <label htmlFor="progressFile">Progress File</label>
-            <input
-              type="file"
-              name="progressFile"
-              onChange={(e) => handleFileChange(e, 'progressFile')}
-              accept=".pdf"
-              className="form-input"
-            />
-            <label htmlFor="rrmApplicationFile">RRM Application File</label>
-            <input
-              type="file"
-              name="rrmApplicationFile"
-              onChange={(e) => handleFileChange(e, 'rrmApplicationFile')}
-              accept=".pdf"
-              className="form-input"
-            />
+            <div className="file-upload-group">
+              <label htmlFor="progressFile" className="file-upload-label">Progress File</label>
+              <input
+                type="file"
+                name="progressFile"
+                onChange={(e) => handleFileChange(e, 'progressFile')}
+                accept=".pdf"
+                className="form-input file-upload-input"
+              />
+            </div>
+
+            <div className="file-upload-group">
+              <label htmlFor="rrmApplicationFile" className="file-upload-label">RRM Application File</label>
+              <input
+                type="file"
+                name="rrmApplicationFile"
+                onChange={(e) => handleFileChange(e, 'rrmApplicationFile')}
+                accept=".pdf"
+                className="form-input file-upload-input"
+              />
+            </div>
           </div>
         </section>
 
