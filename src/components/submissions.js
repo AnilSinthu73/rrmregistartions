@@ -1,6 +1,7 @@
 import axios from 'axios';
+import { saveAs } from 'file-saver';
 import React, { useEffect, useState } from 'react';
-import { CSVLink } from 'react-csv';
+import * as XLSX from 'xlsx';
 import './styles/submissions.css';
 
 const Submissions = () => {
@@ -21,41 +22,82 @@ const Submissions = () => {
     fetchSubmissions();
   }, []);
 
-  // Define full headers for CSV download
-  const fullHeaders = [
-    { label: "Scholar ID", key: "scholarId" },
-    { label: "Scholar Name", key: "scholarName" },
-    { label: "Date of Birth", key: "dateOfBirth" },
-    { label: "Branch", key: "branch" },
-    { label: "Roll Number", key: "rollNumber" },
-    { label: "Scholar Mobile", key: "scholarMobile" },
-    { label: "Scholar Email", key: "scholarEmail" },
-    { label: "Supervisor Mobile", key: "supervisorMobile" },
-    { label: "Supervisor Email", key: "supervisorEmail" },
-    { label: "Co-Supervisor Mobile", key: "coSupervisorMobile" },
-    { label: "Co-Supervisor Email", key: "coSupervisorEmail" },
-    { label: "Title of Research", key: "titleOfResearch" },
-    { label: "Area of Research", key: "areaOfResearch" },
-    { label: "Progress File URL", key: "progressFile" },
-    { label: "RRM Application File URL", key: "rrmApplicationFile" },
-    { label: "Created At", key: "created_at" },
-    { label: "Courses", key: "courses" },
-    { label: "RRM Details", key: "rrmDetails" },
-    { label: "Publications", key: "publications" }
-  ];
-
-  // Define headers for the table view (only the first few columns)
-  const viewHeaders = [
-    { label: "Scholar Name", key: "scholarName" },
-    { label: "Branch", key: "branch" },
-    { label: "Roll Number", key: "rollNumber" },
-    { label: "Supervisor Name", key: "supervisorName" },
-    { label: "Progress File URL", key: "progressFile" },
-    { label: "RRM Application File URL", key: "rrmApplicationFile" },
-    { label: "Title of Research", key: "titleOfResearch" },
-    { label: "Area of Research", key: "areaOfResearch" },
-  ];
-
+  const prepareExcelData = (data) => {
+    return data.map(submission => {
+      // Create flat submission object with all single-valued fields
+      const flatSubmission = {
+        scholarId: submission.scholarId || 'N/A',
+        scholarName: submission.scholarName || 'N/A',
+        dateOfBirth: submission.dateOfBirth || 'N/A',
+        branch: submission.branch || 'N/A',
+        rollNumber: submission.rollNumber || 'N/A',
+        scholarMobile: submission.scholarMobile || 'N/A',
+        scholarEmail: submission.scholarEmail || 'N/A',
+        supervisorName: submission.supervisorName || 'N/A',
+        supervisorMobile: submission.supervisorMobile || 'N/A',
+        supervisorEmail: submission.supervisorEmail || 'N/A',
+        coSupervisorName: submission.coSupervisorName || 'N/A',
+        coSupervisorMobile: submission.coSupervisorMobile || 'N/A',
+        coSupervisorEmail: submission.coSupervisorEmail || 'N/A',
+        titleOfResearch: submission.titleOfResearch || 'N/A',
+        areaOfResearch: submission.areaOfResearch || 'N/A',
+        progressFile: submission.progressFile || 'N/A',
+        rrmApplicationFile: submission.rrmApplicationFile || 'N/A',
+        created_at: submission.created_at || 'N/A',
+      };
+  
+      // Handle multi-value arrays and concatenate them into single fields
+      // Courses
+      flatSubmission.coursesYears = submission.courses?.map(course => course.year).join(', ') || 'N/A';
+      flatSubmission.coursesNames = submission.courses?.map(course => course.course_name).join(', ') || 'N/A';
+      flatSubmission.coursesTypes = submission.courses?.map(course => course.course_type).join(', ') || 'N/A';
+  
+      // RRM Details
+      flatSubmission.rrmStatuses = submission.rrmDetails?.map(rrm => rrm.status).join(', ') || 'N/A';
+      flatSubmission.rrmDates = submission.rrmDetails?.map(rrm => rrm.rrm_date).join(', ') || 'N/A';
+      flatSubmission.rrmSatisfactions = submission.rrmDetails?.map(rrm => rrm.satisfaction).join(', ') || 'N/A';
+      flatSubmission.rrmFiles = submission.rrmDetails?.map(rrm => rrm.file).join(', ') || 'N/A';
+  
+      // Publications
+      flatSubmission.publicationTitles = submission.publications?.map(pub => pub.title).join(', ') || 'N/A';
+      flatSubmission.publicationAuthors = submission.publications?.map(pub => pub.authors).join(', ') || 'N/A';
+      flatSubmission.journalConferences = submission.publications?.map(pub => pub.journal_conference).join(', ') || 'N/A';
+      flatSubmission.impactFactors = submission.publications?.map(pub => pub.impact_factor).join(', ') || 'N/A';
+  
+      return flatSubmission;
+    });
+  };
+  
+  const downloadExcel = () => {
+    const dataForExcel = prepareExcelData(submissions);
+  
+    // Define the worksheet with headers
+    const worksheet = XLSX.utils.json_to_sheet(dataForExcel, {
+      header: [
+        "scholarId", "scholarName", "dateOfBirth", "branch", "rollNumber",
+        "scholarMobile", "scholarEmail", "supervisorName", "supervisorMobile",
+        "supervisorEmail", "coSupervisorName", "coSupervisorMobile", "coSupervisorEmail",
+        "titleOfResearch", "areaOfResearch", "progressFile", "rrmApplicationFile",
+        "created_at", "coursesYears", "coursesNames", "coursesTypes", 
+        "rrmStatuses", "rrmDates", "rrmSatisfactions", "rrmFiles",
+        "publicationTitles", "publicationAuthors", "journalConferences", "impactFactors"
+      ]
+    });
+  
+    // Adjust column widths (optional)
+    const columnWidths = Array(30).fill({ wpx: 150 });
+  
+    worksheet['!cols'] = columnWidths;
+  
+    // Define workbook and add worksheet
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Submissions");
+  
+    // Create Excel file and trigger download
+    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    saveAs(blob, `submissions-${new Date().toISOString().split('T')[0]}.xlsx`);
+  };
   return (
     <div className="submissions-container">
       <h2>Submitted Applications</h2>
@@ -64,64 +106,40 @@ const Submissions = () => {
 
       {submissions.length > 0 ? (
         <div>
-          {/* CSV Download Link */}
-          <div className="csv-download-button">
-            <CSVLink
-              data={submissions}
-              headers={fullHeaders}
-              filename={`submissions-${new Date().toISOString().split('T')[0]}.csv`}
-              className="btn"
-              target="_blank"
-            >
-              Download CSV
-            </CSVLink>
+          {/* Excel Download Button */}
+          <div className="excel-download-button">
+            <button className="btn" onClick={downloadExcel}>
+              Download Excel
+            </button>
           </div>
 
           <table className="submissions-table">
             <thead>
               <tr>
-                {viewHeaders.map((header) => (
-                  <th key={header.key}>{header.label}</th>
-                ))}
+                {/* Column Headers for table view */}
+                <th>Scholar Name</th>
+                <th>Branch</th>
+                <th>Roll Number</th>
+                <th>Supervisor Name</th>
+                <th>Progress File URL</th>
+                <th>RRM Application File URL</th>
+                <th>RRM File URL</th>
+                <th>Title of Research</th>
+                <th>Area of Research</th>
               </tr>
             </thead>
             <tbody>
               {submissions.map((submission, index) => (
                 <tr key={index}>
-                  {viewHeaders.map((header) => {
-                    const value = submission[header.key];
-
-                    if (typeof value === 'object' && value !== null) {
-                      // Render each property of the object (if it's an object)
-                      return (
-                        <td key={header.key}>
-                          {header.key === 'courses' && value.map((course, i) => (
-                            <div key={i}>
-                              Year: {course.year}, Course Name: {course.courseName}, Course Type: {course.courseType}
-                            </div>
-                          ))}
-                          {header.key === 'rrmDetails' && value.map((detail, i) => (
-                            <div key={i}>
-                              Status: {detail.status}, Date: {detail.rrmDate}, Satisfaction: {detail.satisfaction}
-                            </div>
-                          ))}
-                          {header.key === 'publications' && value.map((pub, i) => (
-                            <div key={i}>
-                              Authors: {pub.authors}, Title: {pub.publicationTitle}, Journal: {pub.journalConference}
-                            </div>
-                          ))}
-                          
-                        </td>
-                      );
-                    }
-
-                    // Render directly if not an object, and make URLs clickable
-                    if (header.key === 'progressFile' || header.key === 'rrmApplicationFile') {
-                      return <td key={header.key}><a href={value} target="_blank" rel="noopener noreferrer">View File</a></td>;
-                    }
-
-                    return <td key={header.key}>{value}</td>; // Render directly if not an object
-                  })}
+                  <td>{submission.scholarName}</td>
+                  <td>{submission.branch}</td>
+                  <td>{submission.rollNumber}</td>
+                  <td>{submission.supervisorName}</td>
+                  <td><a href={submission.progressFile} target="_blank" rel="noopener noreferrer">View File</a></td>
+                  <td><a href={submission.rrmApplicationFile} target="_blank" rel="noopener noreferrer">View File</a></td>
+                  <td><a href={submission.rrmDetails[0]?.file} target="_blank" rel="noopener noreferrer">View File</a></td>
+                  <td>{submission.titleOfResearch}</td>
+                  <td>{submission.areaOfResearch}</td>
                 </tr>
               ))}
             </tbody>

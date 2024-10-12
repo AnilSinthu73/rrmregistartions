@@ -7,41 +7,41 @@ const currentYear = new Date().getFullYear();
 const RRMForm = () => {
   const [formData, setFormData] = useState({
     scholarName: '',
-        dateOfBirth: '',
-        branch: '',
-        rollNumber: '',
-        scholarMobile: '',
-        scholarEmail: '',
-        supervisorName: '',
-        supervisorMobile: '',
-        supervisorEmail: '',
-        coSupervisorName: '',
-        coSupervisorMobile: '',
-        coSupervisorEmail: '',
-        titleOfResearch: ' ',
-        areaOfResearch: '',
-        progressFile: '',
-        rrmApplicationFile: '',
-        auditCourse: { courseName: '', year: '' },
-        creditCourse: { courseName: '', year: '' },
-        prePhDSubjects: [
-          { courseName: '', year: '' },
-          { courseName: '2', year: '' },
-        ],
-        rrmDetails: [
-          { date: '', status: '', satisfaction: '',rrmDetailsFile: ''},
-        ],
-        publications: [
-          {
-            title: '',
-            authors: '',
-            journalConference: '',
-            freePaid: '',
-            impactFactor: '',
-          
-          },
-        ],
-      });
+    dateOfBirth: '',
+    branch: '',
+    rollNumber: '',
+    scholarMobile: '',
+    scholarEmail: '',
+    supervisorName: '',
+    supervisorMobile: '',
+    supervisorEmail: '',
+    coSupervisorName: '',
+    coSupervisorMobile: '',
+    coSupervisorEmail: '',
+    titleOfResearch: '',
+    areaOfResearch: '',
+    progressFile: '',
+    rrmApplicationFile: '',
+    auditCourse: { courseName: '', year: '' },
+    creditCourse: { courseName: '', year: '' },
+    prePhDSubjects: [
+      { courseName: '', year: '' },
+      { courseName: '', year: '' },
+    ],
+    rrmDetails: [
+      { date: '', status: '', satisfaction: '', rrmDetailsFile: '' },
+    ],
+    publications: [
+      {
+        title: '',
+        authors: '',
+        journalConference: '',
+        freePaid: '',
+        impactFactor: '',
+
+      },
+    ],
+  });
 
   const [fileError, setFileError] = useState('');
 
@@ -55,9 +55,17 @@ const RRMForm = () => {
 
   const handleFileChange = (e, fieldName) => {
     const file = e.target.files[0];
+    const maxFileSize = 2* 1024 * 1024; // 5 MB in bytes
+  
     if (file) {
       if (file.type !== 'application/pdf') {
         setFileError(`Only PDF files are allowed for ${fieldName}.`);
+        setFormData((prevData) => ({
+          ...prevData,
+          [fieldName]: null,
+        }));
+      } else if (file.size > maxFileSize) {
+        setFileError(`The file size should be less than 2 MB for ${fieldName}.`);
         setFormData((prevData) => ({
           ...prevData,
           [fieldName]: null,
@@ -71,7 +79,7 @@ const RRMForm = () => {
       }
     }
   };
-
+  
   const handleNestedChange = (e, section, index, field) => {
     const { value } = e.target;
     setFormData((prevData) => {
@@ -87,69 +95,56 @@ const RRMForm = () => {
     });
   };
 
-  const handleNestedFileChange = async (e, section, index) => {
+  const handleNestedFileChange = (e, section, index) => {
     const file = e.target.files[0];
-    
+    const maxFileSize = 2 * 1024 * 1024; // 5 MB in bytes
+  
     if (file) {
       if (file.type !== 'application/pdf') {
-        // Set an error message if the file type is not PDF
         setFileError(`Only PDF files are allowed for ${section}.`);
         setFormData((prevData) => {
-          const updatedSection = Array.isArray(prevData[section]) ? [...prevData[section]] : [];
+          const updatedSection = [...prevData[section]];
           updatedSection[index] = {
             ...updatedSection[index],
-            rrmDetailsFile: null, // Clear the file if it is not PDF
+            rrmDetailsFile: null, // Set to null on invalid file type
           };
-          return {
-            ...prevData,
-            [section]: updatedSection,
+          return { ...prevData, [section]: updatedSection };
+        });
+      } else if (file.size > maxFileSize) {
+        setFileError(`The file size should be less than 2 MB for ${section}.`);
+        setFormData((prevData) => {
+          const updatedSection = [...prevData[section]];
+          updatedSection[index] = {
+            ...updatedSection[index],
+            rrmDetailsFile: null, // Set to null if file size exceeds limit
           };
+          return { ...prevData, [section]: updatedSection };
         });
       } else {
-        setFileError(''); // Clear any previous file error
-  
-        // Prepare the file for upload using FormData
-        const formData = new FormData();
-        formData.append('file', file); // Append the file (fixed)
-        
-        try {
-          // Simulate file upload to the server (replace with actual API call)
-          // const response = await uploadFileToServer(formData); // Uncomment when the API is defined
-          
-          // Simulate successful upload response (example of using the uploaded filename)
-          const uploadedFileName = `${file.name}`; // Replace with actual response from backend if needed
-  
-          // Update the formData state with the uploaded file information
-          setFormData((prevData) => {
-            const updatedSection = Array.isArray(prevData[section]) ? [...prevData[section]] : [];
-            updatedSection[index] = {
-              ...(updatedSection[index] || {}),
-              rrmDetailsFile: uploadedFileName, // Use the filename/path returned from the server
-            };
-            return {
-              ...prevData,
-              [section]: updatedSection,
-            };
-          });
-        } catch (error) {
-          console.error('File upload failed:', error);
-          setFileError('Failed to upload the file. Please try again.');
-        }
+        setFileError('');
+        setFormData((prevData) => {
+          const updatedSection = [...prevData[section]];
+          updatedSection[index] = {
+            ...updatedSection[index],
+            rrmDetailsFile: file, // Attach valid file to state
+          };
+          return { ...prevData, [section]: updatedSection };
+        });
       }
     }
   };
-  
+ 
   const addEntry = (section) => {
     setFormData((prevData) => {
       const newEntry = section === 'rrmDetails'
         ? { date: '', status: '', satisfaction: '', rrmDetailsFile: '' }
         : {
-            title: '',
-            authors: '',
-            journalConference: '',
-            freePaid: '',
-            impactFactor: '',
-          };
+          title: '',
+          authors: '',
+          journalConference: '',
+          freePaid: '',
+          impactFactor: '',
+        };
       return {
         ...prevData,
         [section]: Array.isArray(prevData[section]) ? [...prevData[section], newEntry] : [newEntry],
@@ -167,41 +162,45 @@ const RRMForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!formData.progressFile) {
-      setFileError('Please upload a PDF file for the progress of the work.');
-      return;
-    }
-
-    if (!formData.rrmApplicationFile) {
-      setFileError('Please upload a PDF file for the RRM Application Form.');
-      return;
-    }
-
     const dataToSubmit = new FormData();
+
+    // Append simple fields
     for (const key in formData) {
       if (
-        key === 'auditCourse' ||
-        key === 'creditCourse' ||
-        key === 'prePhDSubjects' ||
-        key === 'rrmDetails' ||
-        key === 'publications'
+        key !== 'rrmDetails' &&
+        key !== 'publications' &&
+        key !== 'prePhDSubjects' &&
+        key !== 'auditCourse' &&
+        key !== 'creditCourse'
       ) {
-        if (key === 'rrmDetails') {
-          formData.rrmDetails.forEach((detail, index) => {
-            dataToSubmit.append(`rrmDetails[${index}][date]`, detail.date);
-            dataToSubmit.append(`rrmDetails[${index}][status]`, detail.status);
-            dataToSubmit.append(`rrmDetails[${index}][satisfaction]`, detail.satisfaction);
-            dataToSubmit.append(`rrmDetails[${index}][file]`, detail.file);
-          });
+        // For progressFile and rrmApplicationFile, add them directly
+        if (key === 'progressFile' || key === 'rrmApplicationFile') {
+          dataToSubmit.append(key, formData[key]);
         } else {
-          dataToSubmit.append(key, JSON.stringify(formData[key]));
+          dataToSubmit.append(key, formData[key]);
         }
-      } else if (key === 'progressFile' || key === 'rrmApplicationFile') {
-        dataToSubmit.append(key, formData[key]);
-      } else {
-        dataToSubmit.append(key, formData[key]);
       }
     }
+
+    // Append nested fields: auditCourse, creditCourse, prePhDSubjects, etc.
+    dataToSubmit.append('auditCourse', JSON.stringify(formData.auditCourse));
+    dataToSubmit.append('creditCourse', JSON.stringify(formData.creditCourse));
+    dataToSubmit.append('prePhDSubjects', JSON.stringify(formData.prePhDSubjects));
+
+    // Append RRM Details and Files
+    formData.rrmDetails.forEach((detail, index) => {
+      dataToSubmit.append(`rrmDetails[${index}][date]`, detail.date);
+      dataToSubmit.append(`rrmDetails[${index}][status]`, detail.status);
+      dataToSubmit.append(`rrmDetails[${index}][satisfaction]`, detail.satisfaction);
+
+      // Append the RRM file if it exists
+      if (detail.rrmDetailsFile) {
+        dataToSubmit.append(`rrmDetailsFile`, detail.rrmDetailsFile); // Append file dynamically
+      }
+    });
+
+    // Append publications
+    dataToSubmit.append('publications', JSON.stringify(formData.publications));
 
     try {
       const response = await axios.post('https://registerapi.jntugv.edu.in/api/submit-form', dataToSubmit, {
@@ -211,50 +210,13 @@ const RRMForm = () => {
       });
       console.log('Form data submitted:', response.data);
       alert('Form submitted successfully!');
-      // Reset form data here
-      setFormData({
-        scholarName: '',
-        dateOfBirth: '',
-        branch: '',
-        rollNumber: '',
-        scholarMobile: '',
-        scholarEmail: '',
-        supervisorName: '',
-        supervisorMobile: '',
-        supervisorEmail: '',
-        coSupervisorName: '',
-        coSupervisorMobile: '',
-        coSupervisorEmail: '',
-        titleOfResearch: '',
-        areaOfResearch: '',
-        progressFile: '',
-        rrmApplicationFile: '',
-        auditCourse: { courseName: '', year: '' },
-        creditCourse: { courseName: '', year: '' },
-        prePhDSubjects: [
-          { courseName: '', year: '' },
-          { courseName: '', year: '' },
-        ],
-        rrmDetails: [
-          { date: '', status: '', satisfaction: '',rrmDetailsFile: ''},
-        ],
-        publications: [
-          {
-            title: '',
-            authors: '',
-            journalConference: '',
-            freePaid: '',
-            impactFactor: '',
-          
-          },
-        ],
-      });
-      setFileError('');
+      // Reset form data here if needed
     } catch (error) {
       console.error('Error submitting form:', error);
       alert('There was an error submitting the form. Please try again.');
     }
   };
+
 
   return (
     <div className="rrm-form-container">
@@ -331,14 +293,14 @@ const RRMForm = () => {
           </div>
           <div className='input-group'>
             <label>Supervisor Name</label>
-            <input 
-            type="text"
-            name="supervisorName"
-            value={formData.supervisorName}
-            onChange={handleChange}
-            placeholder="Supervisor Name"
-            required
-            className="form-input"
+            <input
+              type="text"
+              name="supervisorName"
+              value={formData.supervisorName}
+              onChange={handleChange}
+              placeholder="Supervisor Name"
+              required
+              className="form-input"
             />
           </div>
           <div className="input-group">

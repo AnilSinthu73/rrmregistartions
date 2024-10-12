@@ -1,68 +1,101 @@
-/* submissions.css */
-
 .submissions-container {
-    max-width: 1000px; /* Set a maximum width for the container */
-    margin: 0 auto; /* Center the container */
-    padding: 2rem;
-    background-color: #f8f9fa;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  max-width: 1200px; /* Increased max-width for wider screens */
+  margin: 0 auto; /* Center the container */
+  padding: 2rem 1.5rem; /* Added horizontal padding */
+  background-color: #ffffff; /* Changed background to white for contrast */
+  border-radius: 10px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1); /* Deeper shadow for modern effect */
+  transition: all 0.3s ease;
+}
+
+h2 {
+  text-align: center;
+  color: #212529;
+  margin-bottom: 1.5rem;
+  font-size: 1.75rem; /* Larger font size for better readability */
+}
+
+.csv-download-button {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.btn {
+  padding: 0.75rem 1.5rem; /* Slightly larger button */
+  background-color: #007bff;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px; /* Softer corners */
+  cursor: pointer;
+  font-weight: bold;
+  text-decoration: none;
+  font-size: 1rem; /* Larger text */
+  transition: background-color 0.3s ease, transform 0.2s; /* Added smooth hover effect */
+}
+
+.btn:hover {
+  background-color: #0056b3;
+  transform: translateY(-2px); /* Subtle lift effect on hover */
+}
+
+.submissions-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1.5rem;
+  table-layout: fixed;
+}
+
+.submissions-table th, .submissions-table td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid #dee2e6;
+  word-wrap: break-word;
+  max-width: 150px;
+  font-size: 0.9rem; /* Adjusted font size for table content */
+  color: #495057; /* Darker font color for readability */
+}
+
+.submissions-table th {
+  background-color: #f1f3f5; /* Slightly lighter header background */
+  color: #343a40;
+  text-transform: uppercase; /* Uppercase for headers */
+  font-weight: 600;
+}
+
+.submissions-table tr:hover {
+  background-color: #e9ecef;
+}
+
+.submissions-table td a {
+  color: #007bff;
+  text-decoration: underline;
+  font-weight: 500;
+}
+
+.submissions-table td a:hover {
+  color: #0056b3;
+}
+
+.error-message {
+  color: #dc3545;
+  text-align: center;
+  margin-top: 1rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .submissions-container {
+    padding: 1.5rem; /* Reduced padding for smaller screens */
   }
-  
-  h2 {
-    text-align: center;
-    color: #343a40;
-    margin-bottom: 1rem;
-  }
-  
-  .csv-download-button {
-    text-align: center;
-    margin-bottom: 2rem;
-  }
-  
-  .btn {
-    padding: 0.75rem 1.25rem;
-    background-color: #007bff;
-    color: #ffffff;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: bold;
-    text-decoration: none;
-    transition: background-color 0.3s ease;
-  }
-  
-  .btn:hover {
-    background-color: #0056b3;
-  }
-  
-  .submissions-table {
-    width: 100%; /* Make the table take the full width of the container */
-    border-collapse: collapse;
-    margin-top: 1rem;
-    table-layout: fixed; /* Prevent the table from expanding based on content */
-  }
-  
+
   .submissions-table th, .submissions-table td {
-    padding: 0.75rem;
-    text-align: left;
-    border-bottom: 1px solid #dee2e6;
-    word-wrap: break-word; /* Allow text to wrap within the cell */
-    max-width: 150px; /* Set a maximum width for table cells */
+    font-size: 0.85rem; /* Smaller font for mobile */
+    padding: 0.5rem 0.75rem;
   }
-  
-  .submissions-table th {
-    background-color: #e9ecef;
-    color: #495057;
+
+  .btn {
+    padding: 0.65rem 1.2rem; /* Slightly smaller button */
+    font-size: 0.9rem;
   }
-  
-  .submissions-table tr:hover {
-    background-color: #f1f3f5;
-  }
-  
-  .error-message {
-    color: #dc3545;
-    text-align: center;
-    margin-top: 1rem;
-  }
-  
+}
