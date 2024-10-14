@@ -1,101 +1,176 @@
-.submissions-container {
-  max-width: 1200px; /* Increased max-width for wider screens */
-  margin: 0 auto; /* Center the container */
-  padding: 2rem 1.5rem; /* Added horizontal padding */
-  background-color: #ffffff; /* Changed background to white for contrast */
-  border-radius: 10px;
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1); /* Deeper shadow for modern effect */
-  transition: all 0.3s ease;
+/* General Styles */
+.submissions-container { 
+  padding: 20px;
+  background: #f5f5f5;
 }
 
-h2 {
-  text-align: center;
-  color: #212529;
-  margin-bottom: 1.5rem;
-  font-size: 1.75rem; /* Larger font size for better readability */
+.submissions-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #004080;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
 }
 
-.csv-download-button {
-  text-align: center;
-  margin-bottom: 2rem;
+.logo {
+  height: 60px;
+  margin-right: 15px;
 }
 
-.btn {
-  padding: 0.75rem 1.5rem; /* Slightly larger button */
-  background-color: #007bff;
-  color: #ffffff;
-  border: none;
-  border-radius: 6px; /* Softer corners */
+.header-details h1 {
+  font-size: 1.5rem;
+  margin: 0;
+}
+
+.header-details h2 {
+  font-size: 1.2rem;
+  margin: 0;
+}
+
+.user-info {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.user-info span {
+  margin-right: 10px;
   cursor: pointer;
-  font-weight: bold;
-  text-decoration: none;
-  font-size: 1rem; /* Larger text */
-  transition: background-color 0.3s ease, transform 0.2s; /* Added smooth hover effect */
 }
 
-.btn:hover {
-  background-color: #0056b3;
-  transform: translateY(-2px); /* Subtle lift effect on hover */
+.logout-btn {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: #ff4d4d;
+  color: #fff;
+  border: none;
+  padding: 5px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.error-message {
+  color: red;
+}
+
+.excel-download-button {
+  text-align: right;
+  margin-bottom: 20px;
+}
+
+.download-btn {
+  background: #4caf50;
+  color: white;
+  padding: 5px 8px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.9rem;
+}
+
+.download-btn svg {
+  margin-right: 5px;
+}
+
+.submissions-table-container {
+  overflow-x: auto;
 }
 
 .submissions-table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 1.5rem;
-  table-layout: fixed;
 }
 
 .submissions-table th, .submissions-table td {
-  padding: 0.75rem 1rem;
+  padding: 10px;
   text-align: left;
-  border-bottom: 1px solid #dee2e6;
-  word-wrap: break-word;
-  max-width: 150px;
-  font-size: 0.9rem; /* Adjusted font size for table content */
-  color: #495057; /* Darker font color for readability */
+  border: 1px solid #ddd;
 }
 
-.submissions-table th {
-  background-color: #f1f3f5; /* Slightly lighter header background */
-  color: #343a40;
-  text-transform: uppercase; /* Uppercase for headers */
-  font-weight: 600;
-}
-
-.submissions-table tr:hover {
-  background-color: #e9ecef;
-}
-
-.submissions-table td a {
+.submissions-table a {
   color: #007bff;
+  text-decoration: none;
+}
+
+.submissions-table a:hover {
   text-decoration: underline;
-  font-weight: 500;
 }
 
-.submissions-table td a:hover {
-  color: #0056b3;
+/* Hide submission cards on desktop */
+.submissions-list {
+  display: none;
 }
 
-.error-message {
-  color: #dc3545;
-  text-align: center;
-  margin-top: 1rem;
-  font-size: 1.1rem;
-  font-weight: 600;
-}
-
+/* Mobile-specific styles */
 @media (max-width: 768px) {
-  .submissions-container {
-    padding: 1.5rem; /* Reduced padding for smaller screens */
+  .submissions-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
   }
 
-  .submissions-table th, .submissions-table td {
-    font-size: 0.85rem; /* Smaller font for mobile */
-    padding: 0.5rem 0.75rem;
+  .header-details h1 {
+    font-size: 1.2rem;
   }
 
-  .btn {
-    padding: 0.65rem 1.2rem; /* Slightly smaller button */
+  .header-details h2 {
+    font-size: 1rem;
+  }
+
+  /* Hide table on mobile */
+  .submissions-table-container {
+    display: none;
+  }
+
+  /* Show submission cards on mobile */
+  .submissions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .submission-card {
+    background: #ffffff;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .submission-card h3 {
+    margin: 0 0 10px;
+    font-size: 1.2rem;
+  }
+
+  .submission-card div {
+    margin-bottom: 8px;
+  }
+
+  .file-links {
+    display: flex;
+    flex-direction: column;
+    margin-top: 10px;
+  }
+
+  .file-links a {
+    margin-bottom: 5px;
+    color: #007bff;
+    text-decoration: none;
     font-size: 0.9rem;
+  }
+
+  .file-links a:hover {
+    text-decoration: underline;
   }
 }

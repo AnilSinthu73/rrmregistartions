@@ -1,29 +1,48 @@
-import React from 'react';
-import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import AdminLogin from './components/AdminLogin';
 import RRMForm from './components/RRMForm';
-import Submissions from './components/submissions';
+import Submissions from './components/Submissions';
 
 const App = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    // Check if the user is authenticated by reading from localStorage
+    const authStatus = localStorage.getItem('isAuthenticated');
+    if (authStatus === 'true') {
+      setIsAuthenticated(true);
+    }
+  }, []);
+
+  const handleLogin = () => {
+    setIsAuthenticated(true);
+    localStorage.setItem('isAuthenticated', 'true');
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    localStorage.removeItem('isAuthenticated');
+  };
+
   return (
     <Router>
-      {/* <nav style={{ backgroundColor: '#f0f0f0', padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <ul style={{ display: 'flex', listStyleType: 'none', margin: '0', padding: '0' }}>
-          <li style={{ marginRight: '20px' }}>
-            <Link to="/admin-login" style={{ textDecoration: 'none', color: 'blue' }}>Admin Login</Link>
-          </li>
-          <li style={{ marginRight: '20px' }}>
-            
-          </li>
-          <li>
-            <Link to="/" style={{ textDecoration: 'none', color: 'blue' }}>RRM Form</Link>
-          </li>
-        </ul>
-      </nav> */}
       <Routes>
         <Route path="/" element={<RRMForm />} />
-        <Route path="/admin-login" element={<AdminLogin />} />
-        <Route path="/submissions" element={<Submissions />} />
+        <Route
+          path="/admin"
+          element={<AdminLogin setIsAuthenticated={handleLogin} />}
+        />
+        <Route
+          path="/submissions"
+          element={
+            isAuthenticated ? (
+              <Submissions onLogout={handleLogout} />
+            ) : (
+              <Navigate to="/admin" replace />
+            )
+          }
+        />
       </Routes>
     </Router>
   );
