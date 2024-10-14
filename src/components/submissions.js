@@ -51,7 +51,7 @@ const Submissions = ({ onLogout }) => {
         coursesTypes: submission.courses?.map(course => course.course_type).join(', ') || 'N/A',
         rrmStatuses: submission.rrmDetails?.map(rrm => rrm.status).join(', ') || 'N/A',
         rrmDates: submission.rrmDetails?.map(rrm => rrm.rrm_date).join(', ') || 'N/A',
-        rrmSatisfactions: submission.rrmDetails?.map(rrm => rrm.satisfaction).join(', ') || 'N/A',
+        rrmResult: submission.rrmDetails?.map(rrm => rrm.satisfaction).join(', ') || 'N/A',
         rrmFiles: submission.rrmDetails?.map(rrm => rrm.file).join(', ') || 'N/A',
         publicationTitles: submission.publications?.map(pub => pub.title).join(', ') || 'N/A',
         publicationAuthors: submission.publications?.map(pub => pub.authors).join(', ') || 'N/A',

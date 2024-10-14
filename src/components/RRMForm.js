@@ -519,7 +519,7 @@ const RRMForm = () => {
                   required
                   className="form-input"
                 />
-                <label htmlFor={`rrmSatisfaction${index}`}>Satisfaction</label>
+                <label htmlFor={`rrmSatisfaction${index}`}>Result</label>
                 <select
                   name={`rrmSatisfaction${index}`}
                   value={rrm.satisfaction}
