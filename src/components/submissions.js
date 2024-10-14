@@ -9,8 +9,8 @@ const Submissions = ({ onLogout }) => {
   const [submissions, setSubmissions] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
   const [showLogout, setShowLogout] = useState(false);
-  const username = 'drd@jntugv.edu.in'; // Replace with dynamic username if available
-
+  const username = 'drd@jntugv.edu.in';
+  
   useEffect(() => {
     const fetchSubmissions = async () => {
       try {

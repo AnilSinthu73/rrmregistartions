@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import AdminLogin from './components/AdminLogin';
 import RRMForm from './components/RRMForm';
-import Submissions from './components/Submissions';
+import Submissions from './components/submissions';
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
