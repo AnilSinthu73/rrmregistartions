@@ -9,8 +9,8 @@ const Submissions = ({ onLogout }) => {
   const [submissions, setSubmissions] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
   const [showLogout, setShowLogout] = useState(false);
-  const username = 'drd@jntugv.edu.in';
-  
+  const username = `${process.env.username}`;
+
   useEffect(() => {
     const fetchSubmissions = async () => {
       try {
@@ -58,7 +58,7 @@ const Submissions = ({ onLogout }) => {
         journalConferences: submission.publications?.map(pub => pub.journal_conference).join(', ') || 'N/A',
         impactFactors: submission.publications?.map(pub => pub.impact_factor).join(', ') || 'N/A',
       };
-  
+
       return flatSubmission;
     });
   };
@@ -114,7 +114,7 @@ const Submissions = ({ onLogout }) => {
                   <th>Supervisor Name</th>
                   <th>Progress File</th>
                   <th>RRM Application File</th>
-                  <th>RRM File</th>
+                  <th>RRM Files</th>
                   <th>Title of Research</th>
                   <th>Area of Research</th>
                 </tr>
@@ -133,7 +133,11 @@ const Submissions = ({ onLogout }) => {
                       <a href={submission.rrmApplicationFile} target="_blank" rel="noopener noreferrer">View File</a>
                     </td>
                     <td>
-                      <a href={submission.rrmDetails[0]?.file} target="_blank" rel="noopener noreferrer">View File</a>
+                      {submission.rrmDetails?.map((rrm, idx) => (
+                        <div key={idx}>
+                          <a href={rrm.file} target="_blank" rel="noopener noreferrer">RRM File {idx + 1}</a>
+                        </div>
+                      ))}
                     </td>
                     <td>{submission.titleOfResearch}</td>
                     <td>{submission.areaOfResearch}</td>
@@ -157,7 +161,9 @@ const Submissions = ({ onLogout }) => {
                   <strong>Files:</strong>
                   <a href={submission.progressFile} target="_blank" rel="noopener noreferrer">Progress File</a>
                   <a href={submission.rrmApplicationFile} target="_blank" rel="noopener noreferrer">RRM Application File</a>
-                  <a href={submission.rrmDetails[0]?.file} target="_blank" rel="noopener noreferrer">RRM File</a>
+                  {submission.rrmDetails?.map((rrm, idx) => (
+                    <a key={idx} href={rrm.file} target="_blank" rel="noopener noreferrer">RRM File {idx + 1}</a>
+                  ))}
                 </div>
               </div>
             ))}
