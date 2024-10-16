@@ -7,6 +7,7 @@ const currentYear = new Date().getFullYear();
 const RRMForm = () => {
   const [formData, setFormData] = useState({
     scholarName: '',
+    scholarImage: '',
     dateOfBirth: '',
     branch: '',
     rollNumber: '',
@@ -44,6 +45,27 @@ const RRMForm = () => {
   });
 
   const [fileError, setFileError] = useState('');
+  const [imageFile, setImageFile] = useState(null);
+
+  const handleImageChange = (event) => {
+    const file = event.target.files[0];
+
+    if (file) {
+      const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+      if (!validTypes.includes(file.type)) {
+        alert('Only .jpg, .jpeg, and .png formats are allowed.');
+        return;
+      }
+
+      if (file.size > 5 * 1024 * 1024) { // 5MB in bytes
+        alert('File size should be less than 5MB.');
+        return;
+      }
+
+      setImageFile(file);
+    }
+  };
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -174,7 +196,7 @@ const RRMForm = () => {
         key !== 'creditCourse'
       ) {
         // For progressFile and rrmApplicationFile, add them directly
-        if (key === 'progressFile' || key === 'rrmApplicationFile') {
+        if (key === 'progressFile' || key === 'rrmApplicationFile' || key === 'scholarImage') {
           dataToSubmit.append(key, formData[key]);
         } else {
           dataToSubmit.append(key, formData[key]);
@@ -203,7 +225,7 @@ const RRMForm = () => {
     dataToSubmit.append('publications', JSON.stringify(formData.publications));
 
     try {
-      const response = await axios.post('https://registerapi.jntugv.edu.in/api/submit-form', dataToSubmit, {
+      const response = await axios.post('https://localhost:9999/api/submit-form', dataToSubmit, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -236,6 +258,28 @@ const RRMForm = () => {
               required
               className="form-input"
             />
+            <div className="file-upload-container">
+              <div className="file-upload-group">
+                
+                <button
+                  type="button"
+                  className="upload-button"
+                  onClick={() => document.getElementById('imageUpload').click()}
+                >
+                  <label htmlFor="scholarImage">Upload Image<i className="fa fa-upload"></i></label>
+                </button>
+                <input
+                  type="file"
+                  id="imageUpload"
+                  name="scholarImage"
+                  accept=".jpg, .jpeg, .png"
+                  onChange={handleImageChange}
+                  required
+                  className="form-input file-upload-input"
+                />
+              </div>
+              <p className="file-restrictions">Max Size: 5MB, Formats: .jpg, .jpeg, .png</p>
+            </div>
             <label htmlFor="dateOfBirth">Date of Birth</label>
             <input
               type="date"

@@ -29,7 +29,6 @@ const AdminLogin = ({ setIsAuthenticated }) => {
     setErrorMessage('');
 
     try {
-      // Replace with your API call or validation logic
       if (loginData.username === `${process.env.username}` && loginData.password === `${process.env.password}`) {
         setIsAuthenticated();
         navigate('/submissions');

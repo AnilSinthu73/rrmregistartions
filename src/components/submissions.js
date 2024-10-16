@@ -11,6 +11,8 @@ const Submissions = ({ onLogout }) => {
   const [showLogout, setShowLogout] = useState(false);
   const username = `${process.env.username}`;
 
+
+
   useEffect(() => {
     const fetchSubmissions = async () => {
       try {
@@ -26,10 +28,15 @@ const Submissions = ({ onLogout }) => {
   }, []);
 
   const prepareExcelData = (data) => {
+    // Determine the maximum number of RRM files for any submission
+    const maxRRMFiles = Math.max(...data.map(submission => submission.rrmDetails?.length || 1));
+  
     return data.map(submission => {
+      // Base fields for each submission
       const flatSubmission = {
         scholarId: submission.scholarId || 'N/A',
         scholarName: submission.scholarName || 'N/A',
+        scholarImage: submission.scholarImage,
         dateOfBirth: submission.dateOfBirth || 'N/A',
         branch: submission.branch || 'N/A',
         rollNumber: submission.rollNumber || 'N/A',
@@ -52,13 +59,17 @@ const Submissions = ({ onLogout }) => {
         rrmStatuses: submission.rrmDetails?.map(rrm => rrm.status).join(', ') || 'N/A',
         rrmDates: submission.rrmDetails?.map(rrm => rrm.rrm_date).join(', ') || 'N/A',
         rrmResult: submission.rrmDetails?.map(rrm => rrm.satisfaction).join(', ') || 'N/A',
-        rrmFiles: submission.rrmDetails?.map(rrm => rrm.file).join(', ') || 'N/A',
         publicationTitles: submission.publications?.map(pub => pub.title).join(', ') || 'N/A',
         publicationAuthors: submission.publications?.map(pub => pub.authors).join(', ') || 'N/A',
         journalConferences: submission.publications?.map(pub => pub.journal_conference).join(', ') || 'N/A',
         impactFactors: submission.publications?.map(pub => pub.impact_factor).join(', ') || 'N/A',
       };
-
+  
+      // Add RRM files as separate numbered columns
+      for (let i = 0; i < maxRRMFiles; i++) {
+        flatSubmission[`RRM File ${i + 1}`] = submission.rrmDetails?.[i]?.file || 'N/A';
+      }
+  
       return flatSubmission;
     });
   };
@@ -109,6 +120,7 @@ const Submissions = ({ onLogout }) => {
               <thead>
                 <tr>
                   <th>Scholar Name</th>
+                  <th>Scholar Image</th>
                   <th>Branch</th>
                   <th>Roll Number</th>
                   <th>Supervisor Name</th>
@@ -123,6 +135,7 @@ const Submissions = ({ onLogout }) => {
                 {submissions.map((submission, index) => (
                   <tr key={index}>
                     <td>{submission.scholarName}</td>
+                    <td>{submission.scholarImage}</td>
                     <td>{submission.branch}</td>
                     <td>{submission.rollNumber}</td>
                     <td>{submission.supervisorName}</td>
@@ -152,6 +165,7 @@ const Submissions = ({ onLogout }) => {
             {submissions.map((submission, index) => (
               <div className="submission-card" key={index}>
                 <h3>{submission.scholarName}</h3>
+                <div><strong>Image</strong>{submission.scholarImage}</div>
                 <div><strong>Branch:</strong> {submission.branch}</div>
                 <div><strong>Roll Number:</strong> {submission.rollNumber}</div>
                 <div><strong>Supervisor Name:</strong> {submission.supervisorName}</div>
