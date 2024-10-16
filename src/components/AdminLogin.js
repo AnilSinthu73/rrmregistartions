@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './styles/adminLogin.css';
 
@@ -8,6 +8,13 @@ const AdminLogin = ({ setIsAuthenticated }) => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
+  useEffect(()=>{
+    const isAuthenticated = localStorage.getItem('isAuthenticated');
+    if(isAuthenticated){
+      navigate('/submissions');
+    }
+  }, [navigate]);
+  
   const handleChange = (e) => {
     const { name, value } = e.target;
     setLoginData((prevData) => ({
@@ -23,7 +30,7 @@ const AdminLogin = ({ setIsAuthenticated }) => {
 
     try {
       // Replace with your API call or validation logic
-      if (loginData.username === 'drd@jntugv.edu.in' && loginData.password === 'Admin@123') {
+      if (loginData.username === `${process.env.username}` && loginData.password === `${process.env.password}`) {
         setIsAuthenticated();
         navigate('/submissions');
       } else {
