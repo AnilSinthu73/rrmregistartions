@@ -29,7 +29,7 @@ const AdminLogin = ({ setIsAuthenticated }) => {
     setErrorMessage('');
 
     try {
-      if (loginData.username === `${process.env.username}` && loginData.password === `${process.env.password}`) {
+      if (loginData.username === "dr@jntugv.edu.in" && loginData.password === "Admin@123") {
         setIsAuthenticated();
         navigate('/submissions');
       } else {
