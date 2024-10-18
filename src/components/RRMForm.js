@@ -204,7 +204,6 @@ const RRMForm = () => {
     e.preventDefault();
 
     const dataToSubmit = new FormData();
-    console.log(formData.scholarImage);
     // Append simple fields
     for (const key in formData) {
       if (
