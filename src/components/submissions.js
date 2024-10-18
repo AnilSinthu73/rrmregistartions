@@ -16,7 +16,7 @@ const Submissions = ({ onLogout }) => {
   useEffect(() => {
     const fetchSubmissions = async () => {
       try {
-        const response = await axios.get('https://rrmregistration.jntugv.edu.in/api/get-submissions');
+        const response = await axios.get('https://registerapi.jntugv.edu.in/api/get-submissions');
         setSubmissions(response.data);
       } catch (error) {
         console.error('Error fetching submissions:', error);
