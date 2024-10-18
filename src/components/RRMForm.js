@@ -46,6 +46,7 @@ const RRMForm = () => {
 
   const [fileError, setFileError] = useState('');
   const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
 
   const handleImageChange = (event) => {
     const file = event.target.files[0];
@@ -57,12 +58,30 @@ const RRMForm = () => {
         return;
       }
 
-      if (file.size > 5 * 1024 * 1024) { // 5MB in bytes
-        alert('File size should be less than 5MB.');
+      if (file.size > 2 * 1024 * 1024) { // 2MB in bytes
+        alert('File size should be less than 2MB.');
         return;
       }
 
       setImageFile(file);
+      setFormData(prevData => ({
+        ...prevData,
+        scholarImage: file
+      }));
+      // Create image preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+        const uploadButton = document.querySelector('.upload-button');
+        if (uploadButton) {
+          uploadButton.style.backgroundImage = `url(${reader.result})`;
+          uploadButton.style.backgroundSize = 'cover';
+          uploadButton.style.backgroundPosition = 'center';
+          uploadButton.classList.add('file-uploaded');
+        }
+      };
+      reader.readAsDataURL(file);
+      setFileError(''); // Clear any previous errors if file is valid
     }
   };
 
@@ -77,7 +96,7 @@ const RRMForm = () => {
 
   const handleFileChange = (e, fieldName) => {
     const file = e.target.files[0];
-    const maxFileSize = 2 * 1024 * 1024; // 5 MB in bytes
+    const maxFileSize = 2 * 1024 * 1024; // 2 MB in bytes
 
     if (file) {
       if (file.type !== 'application/pdf') {
@@ -119,7 +138,7 @@ const RRMForm = () => {
 
   const handleNestedFileChange = (e, section, index) => {
     const file = e.target.files[0];
-    const maxFileSize = 2 * 1024 * 1024; // 5 MB in bytes
+    const maxFileSize = 2 * 1024 * 1024; // 2 MB in bytes
 
     if (file) {
       if (file.type !== 'application/pdf') {
@@ -185,7 +204,7 @@ const RRMForm = () => {
     e.preventDefault();
 
     const dataToSubmit = new FormData();
-
+    console.log(formData.scholarImage);
     // Append simple fields
     for (const key in formData) {
       if (
@@ -195,9 +214,10 @@ const RRMForm = () => {
         key !== 'auditCourse' &&
         key !== 'creditCourse'
       ) {
-        // For progressFile and rrmApplicationFile, add them directly
-        if (key === 'progressFile' || key === 'rrmApplicationFile' || key === 'scholarImage') {
-          dataToSubmit.append(key, formData[key]);
+        if (key === 'scholarImage') {
+          dataToSubmit.append(key, imageFile, imageFile.name);
+        } else if (key === 'progressFile' || key === 'rrmApplicationFile') {
+          dataToSubmit.append(key, formData[key], formData[key].name);
         } else {
           dataToSubmit.append(key, formData[key]);
         }
@@ -225,7 +245,7 @@ const RRMForm = () => {
     dataToSubmit.append('publications', JSON.stringify(formData.publications));
 
     try {
-      const response = await axios.post('https://registerapi.jntugv.edu.in/api/submit-form', dataToSubmit, {
+      const response = await axios.post('https://rrmregistration.jntugv.edu.in/api/submit-form', dataToSubmit, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -243,12 +263,15 @@ const RRMForm = () => {
   return (
     <div className="rrm-form-container">
       <h2 className="rrm-form-title">Application Form for RRM</h2>
+      <h6 className="rrm-form-subtitle">Please fill in the details below to apply for RRM.</h6>
+      <h6 className="rrm-form-subtitle">Note: All fields marked with an asterisk (*) are required.</h6>
+
       <form onSubmit={handleSubmit} className="rrm-form">
         {/* Scholar Details Section */}
         <section className="form-section">
           <h3 className="section-title">Scholar Details</h3>
           <div className="input-group">
-            <label htmlFor="scholarName">Scholar Name</label>
+            <label htmlFor="scholarName">Scholar Name <span className="required-field">*</span></label>
             <input
               type="text"
               name="scholarName"
@@ -260,13 +283,13 @@ const RRMForm = () => {
             />
             <div className="file-upload-container">
               <div className="file-upload-group">
-                
+              <label htmlFor="scholarImage" className="file-upload-label">Upload Image <span className="required-field">*</span></label>
                 <button
                   type="button"
                   className="upload-button"
                   onClick={() => document.getElementById('imageUpload').click()}
                 >
-                  <label htmlFor="scholarImage">Upload Image<i className="fa fa-upload"></i></label>
+                  <i className="fa fa-upload"></i>
                 </button>
                 <input
                   type="file"
@@ -278,9 +301,9 @@ const RRMForm = () => {
                   className="form-input file-upload-input"
                 />
               </div>
-              <p className="file-restrictions">Max Size: 5MB, Formats: .jpg, .jpeg, .png</p>
+              <p className="file-restrictions">Max Size: 2MB, Formats: .jpg, .jpeg, .png</p>
             </div>
-            <label htmlFor="dateOfBirth">Date of Birth</label>
+            <label htmlFor="dateOfBirth">Date of Birth <span className="required-field">*</span></label>
             <input
               type="date"
               name="dateOfBirth"
@@ -291,7 +314,7 @@ const RRMForm = () => {
             />
           </div>
           <div className="input-group">
-            <label htmlFor="branch">Branch/ Department</label>
+            <label htmlFor="branch">Branch/ Department <span className="required-field">*</span></label>
             <input
               type="text"
               name="branch"
@@ -301,7 +324,7 @@ const RRMForm = () => {
               required
               className="form-input"
             />
-            <label htmlFor='rollNumber'>Roll Number</label>
+            <label htmlFor='rollNumber'>Roll Number <span className="required-field">*</span></label>
             <input
               type="text"
               name="rollNumber"
@@ -313,7 +336,7 @@ const RRMForm = () => {
             />
           </div>
           <div className="input-group">
-            <label htmlFor='scholarMobile'>Contact No</label>
+            <label htmlFor='scholarMobile'>Contact No <span className="required-field">*</span></label>
             <input
               type="tel"
               name="scholarMobile"
@@ -324,7 +347,7 @@ const RRMForm = () => {
               required
               className="form-input"
             />
-            <label htmlFor='scholarEmail'>Email</label>
+            <label htmlFor='scholarEmail'>Email <span className="required-field">*</span></label>
             <input
               type="email"
               name="scholarEmail"
@@ -336,7 +359,7 @@ const RRMForm = () => {
             />
           </div>
           <div className='input-group'>
-            <label htmlFor='supervisorName'>Supervisor Name</label>
+            <label htmlFor='supervisorName'>Supervisor Name <span className="required-field">*</span></label>
             <input
               type="text"
               name="supervisorName"
@@ -348,7 +371,7 @@ const RRMForm = () => {
             />
           </div>
           <div className="input-group">
-            <label htmlFor='supervisorMobile'>Supervisor Contact No</label>
+            <label htmlFor='supervisorMobile'>Supervisor Contact No <span className="required-field">*</span></label>
             <input
               type="tel"
               name="supervisorMobile"
@@ -359,7 +382,7 @@ const RRMForm = () => {
               required
               className="form-input"
             />
-            <label htmlFor='supervisorEmail'>Supervisor Email</label>
+            <label htmlFor='supervisorEmail'>Supervisor Email <span className="required-field">*</span></label>
             <input
               type="email"
               name="supervisorEmail"
@@ -403,7 +426,7 @@ const RRMForm = () => {
             />
           </div>
           <div className="input-group">
-            <label htmlFor='titleOfResearch'>Title of Research</label>
+            <label htmlFor='titleOfResearch'>Title of Research <span className="required-field">*</span></label>
             <input
               type="text"
               name="titleOfResearch"
@@ -413,7 +436,7 @@ const RRMForm = () => {
               required
               className="form-input"
             />
-            <label htmlFor='areaOfResearch'>Area Of Research</label>
+            <label htmlFor='areaOfResearch'>Area Of Research <span className="required-field">*</span></label>
             <input
               type="text"
               name="areaOfResearch"
@@ -426,7 +449,7 @@ const RRMForm = () => {
           </div>
           <div className="input-group">
             <div className="file-upload-group">
-              <label htmlFor="progressFile" className="file-upload-label">Progress File</label>
+              <label htmlFor="progressFile" className="file-upload-label">Progress File (Attach as PDF) <span className="required-field">*</span></label>
               <input
                 type="file"
                 name="progressFile"
@@ -437,7 +460,7 @@ const RRMForm = () => {
             </div>
 
             <div className="file-upload-group">
-              <label htmlFor="rrmApplicationFile" className="file-upload-label">RRM Application File</label>
+              <label htmlFor="rrmApplicationFile" className="file-upload-label">RRM Application File (Attach as PDF) <span className="required-field">*</span></label>
               <input
                 type="file"
                 name="rrmApplicationFile"
@@ -453,7 +476,7 @@ const RRMForm = () => {
         <section className="form-section">
           <h3 className="section-title">Audit Course</h3>
           <div className="input-group">
-            <label htmlFor="auditCourseName">Course Name</label>
+            <label htmlFor="auditCourseName">Course Name <span className="required-field">*</span></label>
             <input
               type="text"
               name="auditCourseName"
@@ -463,7 +486,7 @@ const RRMForm = () => {
               required
               className="form-input"
             />
-            <label htmlFor="auditCourseYear">Year of Completion</label>
+            <label htmlFor="auditCourseYear">Year of Completion <span className="required-field">*</span></label>
             <input
               type="number"
               name="auditCourseYear"
@@ -482,7 +505,7 @@ const RRMForm = () => {
         <section className="form-section">
           <h3 className="section-title">Credit Course</h3>
           <div className="input-group">
-            <label htmlFor="creditCourseName">Course Name</label>
+            <label htmlFor="creditCourseName">Course Name <span className="required-field">*</span></label>
             <input
               type="text"
               name="creditCourseName"
@@ -492,7 +515,7 @@ const RRMForm = () => {
               required
               className="form-input"
             />
-            <label htmlFor="creditCourseYear">Year of Completion</label>
+            <label htmlFor="creditCourseYear">Year of Completion <span className="required-field">*</span></label>
             <input
               type="number"
               name="creditCourseYear"
@@ -512,7 +535,7 @@ const RRMForm = () => {
           <h3 className="section-title">Pre-Ph.D. Subjects</h3>
           {formData.prePhDSubjects.map((subject, index) => (
             <div key={index} className="input-group">
-              <label>{`Pre-Ph.D. Subject ${index + 1} Name`}</label>
+              <label htmlFor={`prePhDSubject${index + 1}Name`}>{`Pre-Ph.D. Subject ${index + 1} Name`} <span className="required-field">*</span></label>
               <input
                 type="text"
                 name={`prePhDSubject${index + 1}Name`}
@@ -522,7 +545,7 @@ const RRMForm = () => {
                 required
                 className="form-input"
               />
-              <label htmlFor={`prePhDSubject${index + 1}Year`}>Year of Completion</label>
+              <label htmlFor={`prePhDSubject${index + 1}Year`}>Year of Completion <span className="required-field">*</span></label>
               <input
                 type="number"
                 name={`prePhDSubject${index + 1}Year`}
@@ -544,7 +567,7 @@ const RRMForm = () => {
           {formData.rrmDetails.map((rrm, index) => (
             <div key={index} className="rrm-detail">
               <div className="input-group">
-                <label htmlFor={`rrmDate${index}`}>Date of RRM</label>
+                <label htmlFor={`rrmDate${index}`}>Date of RRM <span className="required-field">*</span></label>
                 <input
                   type="date"
                   name={`rrmDate${index}`}
@@ -553,7 +576,7 @@ const RRMForm = () => {
                   required
                   className="form-input"
                 />
-                <label htmlFor={`rrmStatus${index}`}>Status of the Work</label>
+                <label htmlFor={`rrmStatus${index}`}>Status of the Work <span className="required-field">*</span></label>
                 <input
                   type="text"
                   name={`rrmStatus${index}`}
@@ -563,7 +586,7 @@ const RRMForm = () => {
                   required
                   className="form-input"
                 />
-                <label htmlFor={`rrmSatisfaction${index}`}>Result</label>
+                <label htmlFor={`rrmSatisfaction${index}`}>Result <span className="required-field">*</span></label>
                 <select
                   name={`rrmSatisfaction${index}`}
                   value={rrm.satisfaction}
@@ -576,7 +599,7 @@ const RRMForm = () => {
                   <option value="Not Satisfactory">Not Satisfactory</option>
                 </select>
               </div>
-              <label htmlFor={`rrmDetailsFile-${index}`}>Upload File</label>
+              <label htmlFor={`rrmDetailsFile-${index}`} className="file-upload-label">Upload File <span className="required-field">*</span> (Attach as PDF)</label>
               <input
                 type="file"
                 id={`rrmDetailsFile-${index}`}
@@ -604,7 +627,7 @@ const RRMForm = () => {
           {formData.publications.map((pub, index) => (
             <div key={index} className="publication-detail">
               <div className="input-group">
-                <label htmlFor={`pubTitle${index}`}>Title of the Paper</label>
+                <label htmlFor={`pubTitle${index}`}>Title of the Paper <span className="required-field">*</span></label>
                 <input
                   type="text"
                   name={`pubTitle${index}`}
@@ -614,7 +637,7 @@ const RRMForm = () => {
                   required
                   className="form-input"
                 />
-                <label htmlFor={`pubAuthors${index}`}>Name of the Authors</label>
+                <label htmlFor={`pubAuthors${index}`}>Name of the Authors <span className="required-field">*</span></label>
                 <input
                   type="text"
                   name={`pubAuthors${index}`}
@@ -626,7 +649,7 @@ const RRMForm = () => {
                 />
               </div>
               <div className="input-group">
-                <label htmlFor={`pubJournalConference${index}`}>Journal/Conference Details</label>
+                <label htmlFor={`pubJournalConference${index}`}>Journal/Conference Details <span className="required-field">*</span></label>
                 <input
                   type="text"
                   name={`pubJournalConference${index}`}
@@ -636,7 +659,7 @@ const RRMForm = () => {
                   required
                   className="form-input"
                 />
-                <label htmlFor={`pubFreePaid${index}`}>Free/Paid</label>
+                <label htmlFor={`pubFreePaid${index}`}>Free/Paid <span className="required-field">*</span></label>
                 <select
                   name={`pubFreePaid${index}`}
                   value={pub.freePaid}
@@ -648,15 +671,16 @@ const RRMForm = () => {
                   <option value="Free">Free</option>
                   <option value="Paid">Paid</option>
                 </select>
-                <label htmlFor={`pubImpactFactor${index}`}>Impact Factor</label>
+                <label htmlFor={`pubImpactFactor${index}`}>Impact Factor <span className="required-field">*</span> (value as out of 10)</label>
                 <input
                   type="number"
                   name={`pubImpactFactor${index}`}
                   value={pub.impactFactor}
                   onChange={(e) => handleNestedChange(e, 'publications', index, 'impactFactor')}
-                  placeholder="Impact Factor"
-                  step="0.01"
+                  placeholder="value as out of 10"
+                  step="1"
                   min="0"
+                  max="10"
                   required
                   className="form-input"
                 />

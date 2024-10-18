@@ -9,14 +9,14 @@ const Submissions = ({ onLogout }) => {
   const [submissions, setSubmissions] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
   const [showLogout, setShowLogout] = useState(false);
-  const username = `${process.env.username}`;
+  const username = "dr@jntugv.edu.in";
 
 
 
   useEffect(() => {
     const fetchSubmissions = async () => {
       try {
-        const response = await axios.get('https://registerapi.jntugv.edu.in/api/get-submissions');
+        const response = await axios.get('https://rrmregistration.jntugv.edu.in/api/get-submissions');
         setSubmissions(response.data);
       } catch (error) {
         console.error('Error fetching submissions:', error);
@@ -135,7 +135,7 @@ const Submissions = ({ onLogout }) => {
                 {submissions.map((submission, index) => (
                   <tr key={index}>
                     <td>{submission.scholarName}</td>
-                    <td>{submission.scholarImage}</td>
+                    <td><img src={submission.scholarImage} alt={submission.scholarName} style={{ width: '100px', height: '100px' }} /></td>
                     <td>{submission.branch}</td>
                     <td>{submission.rollNumber}</td>
                     <td>{submission.supervisorName}</td>
@@ -165,7 +165,7 @@ const Submissions = ({ onLogout }) => {
             {submissions.map((submission, index) => (
               <div className="submission-card" key={index}>
                 <h3>{submission.scholarName}</h3>
-                <div><strong>Image</strong>{submission.scholarImage}</div>
+                <div><strong>Image</strong><img id='scholarImage' src={submission.scholarImage} alt={submission.scholarName} style={{ width: '100px', height: '100px' }} /></div>
                 <div><strong>Branch:</strong> {submission.branch}</div>
                 <div><strong>Roll Number:</strong> {submission.rollNumber}</div>
                 <div><strong>Supervisor Name:</strong> {submission.supervisorName}</div>
