@@ -16,7 +16,7 @@ const Submissions = ({ onLogout }) => {
   useEffect(() => {
     const fetchSubmissions = async () => {
       try {
-        const response = await axios.get('https://rrmregistration.jntugv.edu.in/api/get-submissions');
+        const response = await axios.get('https://registerapi.jntugv.edu.in/api/get-submissions');
         setSubmissions(response.data);
       } catch (error) {
         console.error('Error fetching submissions:', error);
@@ -30,7 +30,7 @@ const Submissions = ({ onLogout }) => {
   const prepareExcelData = (data) => {
     // Determine the maximum number of RRM files for any submission
     const maxRRMFiles = Math.max(...data.map(submission => submission.rrmDetails?.length || 1));
-  
+
     return data.map(submission => {
       // Base fields for each submission
       const flatSubmission = {
@@ -64,12 +64,12 @@ const Submissions = ({ onLogout }) => {
         journalConferences: submission.publications?.map(pub => pub.journal_conference).join(', ') || 'N/A',
         impactFactors: submission.publications?.map(pub => pub.impact_factor).join(', ') || 'N/A',
       };
-  
+
       // Add RRM files as separate numbered columns
       for (let i = 0; i < maxRRMFiles; i++) {
         flatSubmission[`RRM File ${i + 1}`] = submission.rrmDetails?.[i]?.file || 'N/A';
       }
-  
+
       return flatSubmission;
     });
   };
@@ -85,7 +85,7 @@ const Submissions = ({ onLogout }) => {
   };
 
   return (
-    <div className="submissions-container">
+    <><div className="submissions-container">
       <header className="submissions-header">
         <img src="https://jntugv.edu.in/static/media/jntugvcev.b33bb43b07b2037ab043.jpg" alt="JNTUGV Logo" className="logo" />
         <div className="header-details">
@@ -93,8 +93,8 @@ const Submissions = ({ onLogout }) => {
           <h2>Jawaharlal Nehru Technological University - Gurajada, Vizianagaram</h2>
         </div>
         <div className="user-info"
-             onMouseEnter={() => setShowLogout(true)}
-             onMouseLeave={() => setShowLogout(false)}>
+          onMouseEnter={() => setShowLogout(true)}
+          onMouseLeave={() => setShowLogout(false)}>
           <span>{username}</span>
           {showLogout && (
             <button className="btn logout-btn" onClick={onLogout}>
@@ -186,8 +186,37 @@ const Submissions = ({ onLogout }) => {
       ) : (
         <p>No submissions found.</p>
       )}
+
     </div>
+  <footer className="submissions-footer">
+        <h4 className="copyright">&copy; {new Date().getFullYear()} JNTU-GV Vizianagaram. All rights reserved.</h4>
+        <h6 className="credits">Designed, developed and maintained by Digital Monitoring Cell of JNTU-GV Vizianagaram</h6>
+      </footer>
+      {/* <style jsx>{`
+    .submissions-footer {
+      background-color: #1a237e;
+      color: #ffffff;
+      padding: 20px 0;
+      text-align: center;
+      font-family: Arial, sans-serif;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+    }
+    .copyright {
+      font-size: 14px;
+      margin-bottom: 5px;
+    }
+    .credits {
+      font-size: 12px;
+      font-style: italic;
+      color: #e0e0e0;
+    }
+  `}</style> */}
+    </>
   );
 };
 
+
 export default Submissions;
+
