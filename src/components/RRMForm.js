@@ -311,7 +311,7 @@ const RRMForm = () => {
                       accept=".jpg, .jpeg, .png"
                       onChange={handleImageChange}
                       required
-                      className="form-input file-upload-input" />
+                      className="file-upload-input" />
                   </div>
                 </div>
                 <label htmlFor="dateOfBirth">Date of Birth <span className="required-field">*</span></label>

@@ -190,6 +190,10 @@ label {
   font-size: 14px;
   text-align: center;
 }
+
+.form-input.file-upload-input {
+  display: flex;
+}
 /* Form Sections */
 .form-section {
   background-color: #ffffff;
