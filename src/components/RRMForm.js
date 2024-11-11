@@ -5,7 +5,7 @@ import './styles/RRMForm.css';
 const currentYear = new Date().getFullYear();
 
 const RRMForm = () => {
-  const [formData, setFormData] = useState({
+  const initialFormData = {
     scholarName: '',
     scholarImage: '',
     dateOfBirth: '',
@@ -42,7 +42,9 @@ const RRMForm = () => {
 
       },
     ],
-  });
+  };
+
+  const [formData, setFormData] = useState(initialFormData);
 
   const [fileError, setFileError] = useState('');
   const [imageFile, setImageFile] = useState(null);
@@ -65,10 +67,10 @@ const RRMForm = () => {
       }
 
       setImageFile(file);
-      setFormData(prevData => ({
-        ...prevData,
+      setFormData({
+        ...formData,
         scholarImage: file
-      }));
+      });
       // Create image preview
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -89,10 +91,10 @@ const RRMForm = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
+    setFormData({
+      ...formData,
       [name]: value,
-    }));
+    });
   };
   const handleFileChange = (e, fieldName) => {
     const file = e.target.files[0];
@@ -105,10 +107,10 @@ const RRMForm = () => {
         setFileError(`The file size should be less than 2 MB for ${fieldName}.`);
       } else {
         setFileError(''); // Clear any previous errors if file is valid
-        setFormData((prevData) => ({
-          ...prevData,
+        setFormData({
+          ...formData,
           [fieldName]: file,
-        }));
+        });
       }
     }
   };
@@ -130,7 +132,7 @@ const RRMForm = () => {
 
   const handleNestedFileChange = (e, section, index) => {
     const file = e.target.files[0];
-    const maxFileSize = 2 * 1024 * 1024; // 2 MB in bytes
+    const maxFileSize = 2 * 102 * 1024; // 2 MB in bytes
 
     if (file) {
       if (file.type !== 'application/pdf') {
@@ -244,7 +246,8 @@ const RRMForm = () => {
       });
       // console.log('Form data submitted:', response.data);
       alert('Form submitted successfully!');
-      // setFormData({}); 
+      setFormData(initialFormData); 
+      window.location.reload();// Clear the form on successful submission
     } catch (error) {
       console.error('Error submitting form:', error);
       if (error.response && error.response.status === 409) {
@@ -258,7 +261,7 @@ const RRMForm = () => {
       }
     } finally {
       setIsSubmitting(false);
-      setFormData({});
+      setFormData(initialFormData);   
     }
   };
 
