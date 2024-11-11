@@ -242,9 +242,9 @@ const RRMForm = () => {
           'Content-Type': 'multipart/form-data',
         },
       });
-      console.log('Form data submitted:', response.data);
+      // console.log('Form data submitted:', response.data);
       alert('Form submitted successfully!');
-      setFormData({}); // Reset the form data
+      // setFormData({}); 
     } catch (error) {
       console.error('Error submitting form:', error);
       if (error.response && error.response.status === 409) {
@@ -258,6 +258,7 @@ const RRMForm = () => {
       }
     } finally {
       setIsSubmitting(false);
+      setFormData({});
     }
   };
 
