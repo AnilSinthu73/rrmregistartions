@@ -18,7 +18,7 @@ const Submissions = ({ onLogout }) => {
     const fetchSubmissions = async () => {
       setIsLoading(true); // Start loading animation
       try {
-        const response = await axios.get('https://registarapi.jntugv.edu.in/api/get-submissions');
+        const response = await axios.get('https://registerapi.jntugv.edu.in/api/get-submissions');
         setSubmissions(response.data);
         setErrorMessage(''); // Clear any previous error messages
       } catch (error) {
