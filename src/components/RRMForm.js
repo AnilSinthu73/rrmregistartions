@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './styles/RRMForm.css';
 
 const currentYear = new Date().getFullYear();
@@ -47,6 +47,7 @@ const RRMForm = () => {
   const [fileError, setFileError] = useState('');
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleImageChange = (event) => {
     const file = event.target.files[0];
@@ -93,7 +94,6 @@ const RRMForm = () => {
       [name]: value,
     }));
   };
-
   const handleFileChange = (e, fieldName) => {
     const file = e.target.files[0];
     const maxFileSize = 2 * 1024 * 1024; // 2 MB in bytes
@@ -101,18 +101,10 @@ const RRMForm = () => {
     if (file) {
       if (file.type !== 'application/pdf') {
         setFileError(`Only PDF files are allowed for ${fieldName}.`);
-        setFormData((prevData) => ({
-          ...prevData,
-          [fieldName]: null,
-        }));
       } else if (file.size > maxFileSize) {
         setFileError(`The file size should be less than 2 MB for ${fieldName}.`);
-        setFormData((prevData) => ({
-          ...prevData,
-          [fieldName]: null,
-        }));
       } else {
-        setFileError('');
+        setFileError(''); // Clear any previous errors if file is valid
         setFormData((prevData) => ({
           ...prevData,
           [fieldName]: file,
@@ -202,6 +194,7 @@ const RRMForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
 
     const dataToSubmit = new FormData();
     // Append simple fields
@@ -212,10 +205,11 @@ const RRMForm = () => {
         key !== 'prePhDSubjects' &&
         key !== 'auditCourse' &&
         key !== 'creditCourse'
-      ) {
+      ){
         if (key === 'scholarImage') {
           dataToSubmit.append(key, imageFile, imageFile.name);
         } else if (key === 'progressFile' || key === 'rrmApplicationFile') {
+          
           dataToSubmit.append(key, formData[key], formData[key].name);
         } else {
           dataToSubmit.append(key, formData[key]);
@@ -242,7 +236,6 @@ const RRMForm = () => {
 
     // Append publications
     dataToSubmit.append('publications', JSON.stringify(formData.publications));
-
     try {
       const response = await axios.post('https://registerapi.jntugv.edu.in/api/submit-form', dataToSubmit, {
         headers: {
@@ -251,13 +244,30 @@ const RRMForm = () => {
       });
       console.log('Form data submitted:', response.data);
       alert('Form submitted successfully!');
-      // Reset form data here if needed
+      setFormData({}); // Reset the form data
     } catch (error) {
       console.error('Error submitting form:', error);
-      alert('There was an error submitting the form. Please try again.');
+      if (error.response && error.response.status === 409) {
+        alert('Scholar data is already submitted. Do not click Submit multiple times');
+      } else if (error.response && error.response.status === 500) {
+        alert('An error occurred while submitting the form, Try Again ...');
+      } else if (error.response && error.response.status === 404) {
+        alert('Resource not found, please try again.');
+      } else {
+        alert('An unexpected error occurred, please try again.');
+      }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
+  useEffect(() => {
+    if (isSubmitting) {
+      document.body.style.cursor = 'wait';
+    } else {
+      document.body.style.cursor = 'default';
+    }
+  }, [isSubmitting]);
 
   return (
     <>
@@ -457,7 +467,7 @@ const RRMForm = () => {
                 </div>
 
                 <div className="file-upload-group">
-                  <label htmlFor="rrmApplicationFile" className="file-upload-label">RRM Application File (Attach as PDF) </label>
+                  <label htmlFor="rrmApplicationFile" className="file-upload-label">RRM Application File (Attach as PDF)<span className='required-field' >*</span></label>
                   <input
                     type="file"
                     name="rrmApplicationFile"

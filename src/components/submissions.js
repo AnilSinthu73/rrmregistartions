@@ -9,18 +9,23 @@ const Submissions = ({ onLogout }) => {
   const [submissions, setSubmissions] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
   const [showLogout, setShowLogout] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // Added to track loading state
   const username = "dr@jntugv.edu.in";
 
 
 
   useEffect(() => {
     const fetchSubmissions = async () => {
+      setIsLoading(true); // Start loading animation
       try {
-        const response = await axios.get('https://registerapi.jntugv.edu.in/api/get-submissions');
+        const response = await axios.get('https://registarapi.jntugv.edu.in/api/get-submissions');
         setSubmissions(response.data);
+        setErrorMessage(''); // Clear any previous error messages
       } catch (error) {
         console.error('Error fetching submissions:', error);
         setErrorMessage('There was an error fetching submissions. Please try again.');
+      } finally {
+        setIsLoading(false); // Stop loading animation
       }
     };
 
@@ -106,85 +111,91 @@ const Submissions = ({ onLogout }) => {
 
       {errorMessage && <p className="error-message">{errorMessage}</p>}
 
-      {submissions.length > 0 ? (
-        <div>
-          <div className="excel-download-button">
-            <button className="btn download-btn" onClick={downloadExcel}>
-              <FaDownload /> Download
-            </button>
-          </div>
-
-          {/* Desktop Table */}
-          <div className="submissions-table-container">
-            <table className="submissions-table">
-              <thead>
-                <tr>
-                  <th>Scholar Name</th>
-                  <th>Scholar Image</th>
-                  <th>Branch</th>
-                  <th>Roll Number</th>
-                  <th>Supervisor Name</th>
-                  <th>Progress File</th>
-                  <th>RRM Application File</th>
-                  <th>RRM Files</th>
-                  <th>Title of Research</th>
-                  <th>Area of Research</th>
-                </tr>
-              </thead>
-              <tbody>
-                {submissions.map((submission, index) => (
-                  <tr key={index}>
-                    <td>{submission.scholarName}</td>
-                    <td><img src={submission.scholarImage} alt={submission.scholarName} style={{ width: '100px', height: '100px' }} /></td>
-                    <td>{submission.branch}</td>
-                    <td>{submission.rollNumber}</td>
-                    <td>{submission.supervisorName}</td>
-                    <td>
-                      <a href={submission.progressFile} target="_blank" rel="noopener noreferrer">View File</a>
-                    </td>
-                    <td>
-                      <a href={submission.rrmApplicationFile} target="_blank" rel="noopener noreferrer">View File</a>
-                    </td>
-                    <td>
-                      {submission.rrmDetails?.map((rrm, idx) => (
-                        <div key={idx}>
-                          <a href={rrm.file} target="_blank" rel="noopener noreferrer">RRM File {idx + 1}</a>
-                        </div>
-                      ))}
-                    </td>
-                    <td>{submission.titleOfResearch}</td>
-                    <td>{submission.areaOfResearch}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Mobile Cards */}
-          <div className="submissions-list">
-            {submissions.map((submission, index) => (
-              <div className="submission-card" key={index}>
-                <h3>{submission.scholarName}</h3>
-                <div><strong>Image</strong><img id='scholarImage' src={submission.scholarImage} alt={submission.scholarName} style={{ width: '100px', height: '100px' }} /></div>
-                <div><strong>Branch:</strong> {submission.branch}</div>
-                <div><strong>Roll Number:</strong> {submission.rollNumber}</div>
-                <div><strong>Supervisor Name:</strong> {submission.supervisorName}</div>
-                <div><strong>Title of Research:</strong> {submission.titleOfResearch}</div>
-                <div><strong>Area of Research:</strong> {submission.areaOfResearch}</div>
-                <div className="file-links">
-                  <strong>Files:</strong>
-                  <a href={submission.progressFile} target="_blank" rel="noopener noreferrer">Progress File</a>
-                  <a href={submission.rrmApplicationFile} target="_blank" rel="noopener noreferrer">RRM Application File</a>
-                  {submission.rrmDetails?.map((rrm, idx) => (
-                    <a key={idx} href={rrm.file} target="_blank" rel="noopener noreferrer">RRM File {idx + 1}</a>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+      {isLoading ? (
+        <div>Loading...</div>
       ) : (
-        <p>No submissions found.</p>
+        <>
+          {submissions.length > 0 ? (
+            <div>
+              <div className="excel-download-button">
+                <button className="btn download-btn" onClick={downloadExcel}>
+                  <FaDownload /> Download
+                </button>
+              </div>
+
+              {/* Desktop Table */}
+              <div className="submissions-table-container">
+                <table className="submissions-table">
+                  <thead>
+                    <tr>
+                      <th>Scholar Name</th>
+                      <th>Scholar Image</th>
+                      <th>Branch</th>
+                      <th>Roll Number</th>
+                      <th>Supervisor Name</th>
+                      <th>Progress File</th>
+                      <th>RRM Application File</th>
+                      <th>RRM Files</th>
+                      <th>Title of Research</th>
+                      <th>Area of Research</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {submissions.map((submission, index) => (
+                      <tr key={index}>
+                        <td>{submission.scholarName}</td>
+                        <td><img src={submission.scholarImage} alt={submission.scholarName} style={{ width: '100px', height: '100px' }} /></td>
+                        <td>{submission.branch}</td>
+                        <td>{submission.rollNumber}</td>
+                        <td>{submission.supervisorName}</td>
+                        <td>
+                          <a href={submission.progressFile} target="_blank" rel="noopener noreferrer">View File</a>
+                        </td>
+                        <td>
+                          <a href={submission.rrmApplicationFile} target="_blank" rel="noopener noreferrer">View File</a>
+                        </td>
+                        <td>
+                          {submission.rrmDetails?.map((rrm, idx) => (
+                            <div key={idx}>
+                              <a href={rrm.file} target="_blank" rel="noopener noreferrer">RRM File {idx + 1}</a>
+                            </div>
+                          ))}
+                        </td>
+                        <td>{submission.titleOfResearch}</td>
+                        <td>{submission.areaOfResearch}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Mobile Cards */}
+              <div className="submissions-list">
+                {submissions.map((submission, index) => (
+                  <div className="submission-card" key={index}>
+                    <h3>{submission.scholarName}</h3>
+                    <div><strong>Image</strong><img id='scholarImage' src={submission.scholarImage} alt={submission.scholarName} style={{ width: '100px', height: '100px' }} /></div>
+                    <div><strong>Branch:</strong> {submission.branch}</div>
+                    <div><strong>Roll Number:</strong> {submission.rollNumber}</div>
+                    <div><strong>Supervisor Name:</strong> {submission.supervisorName}</div>
+                    <div><strong>Title of Research:</strong> {submission.titleOfResearch}</div>
+                    <div><strong>Area of Research:</strong> {submission.areaOfResearch}</div>
+                    <div className="file-links">
+                      <strong>Files:</strong>
+                      <a href={submission.progressFile} target="_blank" rel="noopener noreferrer">Progress File</a>
+                      <a href={submission.rrmApplicationFile} target="_blank" rel="noopener noreferrer">RRM Application File</a>
+                      {submission.rrmDetails?.map((rrm, idx) => (
+                        <a key={idx} href={rrm.file} target="_blank" rel="noopener noreferrer">RRM File {idx + 1}</a>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <p>No submissions found.</p>
+          )}
+        </>
       )}
 
     </div>
