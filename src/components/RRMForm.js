@@ -1,11 +1,11 @@
 import axios from 'axios';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import './styles/RRMForm.css';
 
 const currentYear = new Date().getFullYear();
 
 const RRMForm = () => {
-  const initialFormData = {
+  const [formData, setFormData] = useState({
     scholarName: '',
     scholarImage: '',
     dateOfBirth: '',
@@ -42,14 +42,11 @@ const RRMForm = () => {
 
       },
     ],
-  };
-
-  const [formData, setFormData] = useState(initialFormData);
+  });
 
   const [fileError, setFileError] = useState('');
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleImageChange = (event) => {
     const file = event.target.files[0];
@@ -67,10 +64,10 @@ const RRMForm = () => {
       }
 
       setImageFile(file);
-      setFormData({
-        ...formData,
+      setFormData(prevData => ({
+        ...prevData,
         scholarImage: file
-      });
+      }));
       // Create image preview
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -91,11 +88,12 @@ const RRMForm = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
+    setFormData((prevData) => ({
+      ...prevData,
       [name]: value,
-    });
+    }));
   };
+
   const handleFileChange = (e, fieldName) => {
     const file = e.target.files[0];
     const maxFileSize = 2 * 1024 * 1024; // 2 MB in bytes
@@ -103,14 +101,22 @@ const RRMForm = () => {
     if (file) {
       if (file.type !== 'application/pdf') {
         setFileError(`Only PDF files are allowed for ${fieldName}.`);
+        setFormData((prevData) => ({
+          ...prevData,
+          [fieldName]: null,
+        }));
       } else if (file.size > maxFileSize) {
         setFileError(`The file size should be less than 2 MB for ${fieldName}.`);
+        setFormData((prevData) => ({
+          ...prevData,
+          [fieldName]: null,
+        }));
       } else {
-        setFileError(''); // Clear any previous errors if file is valid
-        setFormData({
-          ...formData,
+        setFileError('');
+        setFormData((prevData) => ({
+          ...prevData,
           [fieldName]: file,
-        });
+        }));
       }
     }
   };
@@ -132,7 +138,7 @@ const RRMForm = () => {
 
   const handleNestedFileChange = (e, section, index) => {
     const file = e.target.files[0];
-    const maxFileSize = 2 * 102 * 1024; // 2 MB in bytes
+    const maxFileSize = 2 * 1024 * 1024; // 2 MB in bytes
 
     if (file) {
       if (file.type !== 'application/pdf') {
@@ -196,7 +202,6 @@ const RRMForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsSubmitting(true);
 
     const dataToSubmit = new FormData();
     // Append simple fields
@@ -207,11 +212,10 @@ const RRMForm = () => {
         key !== 'prePhDSubjects' &&
         key !== 'auditCourse' &&
         key !== 'creditCourse'
-      ){
+      ) {
         if (key === 'scholarImage') {
           dataToSubmit.append(key, imageFile, imageFile.name);
         } else if (key === 'progressFile' || key === 'rrmApplicationFile') {
-          
           dataToSubmit.append(key, formData[key], formData[key].name);
         } else {
           dataToSubmit.append(key, formData[key]);
@@ -238,15 +242,14 @@ const RRMForm = () => {
 
     // Append publications
     dataToSubmit.append('publications', JSON.stringify(formData.publications));
+
     try {
-      const response = await axios.post('https://registerapi.jntugv.edu.in/api/submit-form', dataToSubmit, {
+      const response = await axios.post('http://localhost:9999/api/submit-form', dataToSubmit, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
-      // console.log('Form data submitted:', response.data);
       alert('Form submitted successfully!');
-      setFormData(initialFormData); 
       window.location.reload();// Clear the form on successful submission
     } catch (error) {
       console.error('Error submitting form:', error);
@@ -260,18 +263,9 @@ const RRMForm = () => {
         alert('An unexpected error occurred, please try again.');
       }
     } finally {
-      setIsSubmitting(false);
-      setFormData(initialFormData);   
+      window.location.reload();   
     }
   };
-
-  useEffect(() => {
-    if (isSubmitting) {
-      document.body.style.cursor = 'wait';
-    } else {
-      document.body.style.cursor = 'default';
-    }
-  }, [isSubmitting]);
 
   return (
     <>
@@ -471,7 +465,7 @@ const RRMForm = () => {
                 </div>
 
                 <div className="file-upload-group">
-                  <label htmlFor="rrmApplicationFile" className="file-upload-label">RRM Application File (Attach as PDF)<span className='required-field' >*</span></label>
+                  <label htmlFor="rrmApplicationFile" className="file-upload-label">RRM Application File (Attach as PDF) </label>
                   <input
                     type="file"
                     name="rrmApplicationFile"
