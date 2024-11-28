@@ -650,6 +650,7 @@ const RRMForm = () => {
                       <option value="Paid">Paid</option>
                     </select>
                     <label htmlFor={`pubImpactFactor${index}`}>Impact Factor (value as out of 10)</label>
+                    <p>Place zero if no value for impact factor</p>
                     <input
                       type="number"
                       name={`pubImpactFactor${index}`}
@@ -659,6 +660,7 @@ const RRMForm = () => {
                       step="1"
                       min="0"
                       max="10"
+                      default="0"
                       className="form-input" />
                   </div>
                   {/* <label htmlFor={`publicationFile-${index}`}>Upload File</label>
