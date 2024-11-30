@@ -1,0 +1,32 @@
+/* Footer Styles */
+.rrm-form-footer {
+    background-color: #004080;
+    color: #ffffff;
+    padding: 20px;
+    text-align: center;
+    border-top: 1px solid #0056b3;
+    width: 100%;
+    box-sizing: border-box;
+    position: absolute;
+    bottom: 0;
+    opacity: 1; /* Override other component opacity */
+  }
+  a {
+    text-decoration: none;
+  }
+  
+  .rrm-form-footer .copyright {
+    font-size: 14px;
+    margin-bottom: 5px;
+  }
+  
+  .rrm-form-footer .credits {
+    font-size: 12px;
+    font-style: italic;
+    color: #e0e0e0;
+  }
+  
+  .rrm-form-footer .department,
+  .rrm-form-footer .university {
+    font-weight: bold;
+  }

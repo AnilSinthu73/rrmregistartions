@@ -1,0 +1,101 @@
+.page-down-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 90vh; /* Decreased container height to 90vh to make space for footer */
+    width: 100vw; /* Decreased container width to 80% */
+    position: relative;
+    background-image: url('https://source.unsplash.com/1600x900/?university,education');
+    background-size: cover;
+    background-position: center;
+    color: rgba(0, 0, 0,1);
+    text-align: center;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    overflow: hidden;
+  }
+  .page-down-title .animate__animated .animate__fadeInDown{
+    color: rgba(225, 0, 0, 1);
+  }
+  .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 88%;
+    background: rgba(255, 255, 255, 0.89);
+    z-index: 1;
+  }
+  
+  .page-down-content {
+    z-index: 2;
+    padding: 20px;
+    max-width: 700px;
+  }
+  
+  .page-down-title {
+    font-size: 3rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.7);
+  }
+  
+  .page-down-message {
+    font-size: 1.5rem;
+    line-height: 1.8;
+    text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.7);
+  }
+  
+  .loader {
+    margin: 30px auto 0;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3b82f6;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+  
+  /* Animation Library */
+  .animate__animated {
+    animation-duration: 1s;
+    animation-fill-mode: both;
+  }
+  
+  .animate__fadeInDown {
+    animation-name: fadeInDown;
+  }
+  
+  .animate__fadeInUp {
+    animation-name: fadeInUp;
+  }
+  
+  @keyframes fadeInDown {
+    from {
+      opacity: 0;
+      transform: translateY(-50px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(50px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
