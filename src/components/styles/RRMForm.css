@@ -278,7 +278,7 @@ label {
   border-top: 1px solid #0056b3;
   width: 100%;
   box-sizing: border-box;
-  postion:fixed;
+  position:relative;
 }
 
 .rrm-form-footer .copyright {
