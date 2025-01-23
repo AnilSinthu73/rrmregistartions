@@ -30,8 +30,8 @@ const App = () => {
     
     <Router>
       <Routes>
-        {/* <Route path="/" element={<RRMForm />} /> */}
-        <Route path="/" element={<PageDown/>}/>
+        <Route path="/" element={<RRMForm />} />
+        <Route path="/404" element={<PageDown/>}/>
         <Route
           path="/admin"
           element={<AdminLogin setIsAuthenticated={handleLogin} />}
